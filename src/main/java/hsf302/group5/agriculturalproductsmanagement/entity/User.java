@@ -5,12 +5,14 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
+
 @Entity
 @Table(name = "users")
 @NoArgsConstructor
 @AllArgsConstructor
 @Data
-public class UserEntity {
+public class User {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -37,5 +39,8 @@ public class UserEntity {
 
     @ManyToOne
     @JoinColumn(name = "role_id", nullable = false)
-    private RoleEntity role;
+    private Role role;
+
+    @OneToMany(mappedBy = "user")
+    private List<Order> orders;
 }

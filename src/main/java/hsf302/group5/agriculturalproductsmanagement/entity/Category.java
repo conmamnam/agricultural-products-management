@@ -8,19 +8,20 @@ import lombok.NoArgsConstructor;
 import java.util.List;
 
 @Entity
-@Table(name = "roles")
+@Table(name = "categories")
 @NoArgsConstructor
 @AllArgsConstructor
 @Data
-public class RoleEntity {
+public class Category {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int roleId;
+    @Column(name = "category_id", updatable = false)
+    private int categoryId;
 
-    @Column(name = "role_name", length = 50, nullable = false)
-    private String roleName;
+    @Column(name = "category_name", length = 255, nullable = false)
+    private String categoryName;
 
-    @OneToMany(mappedBy = "role")
-    private List<UserEntity> user;
+    @OneToMany(mappedBy = "category")
+    private List<Product> products;
 }
