@@ -53,12 +53,14 @@ public class UserController {
         user.setRole(roleService.getByRoleId(2));
         userService.addUser(user);
 
-        return "register";
+        return "redirect:/";
     }
+
     @GetMapping("/login")
     public String loginPage() {
         return "login";
     }
+
     @PostMapping("/login")
     public String loginSubmit(@RequestParam String email, @RequestParam String password, Model model) {
         User user = userService.getUserByEmailAndPassword(email, password);
@@ -69,6 +71,4 @@ public class UserController {
             return "login";
         }
     }
-
-
 }
