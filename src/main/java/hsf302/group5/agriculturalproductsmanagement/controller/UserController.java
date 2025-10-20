@@ -53,25 +53,22 @@ public class UserController {
         user.setRole(roleService.getByRoleId(2));
         userService.addUser(user);
 
-        return "register";
+        return "redirect:/";
     }
+
     @GetMapping("/login")
     public String loginPage() {
         return "login";
     }
+
     @PostMapping("/login")
     public String loginSubmit(@RequestParam String email, @RequestParam String password, Model model) {
         User user = userService.getUserByEmailAndPassword(email, password);
         if(user!=null){
-            return"redirect:/index";
+            return"redirect:/";
         }else {
             model.addAttribute("error", "Invalid username or password");
             return "login";
         }
     }
-    @GetMapping("")
-    public String indexPage() {
-        return "index";
-    }
-
 }
