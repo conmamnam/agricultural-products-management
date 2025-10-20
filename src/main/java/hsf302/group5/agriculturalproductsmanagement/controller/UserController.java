@@ -63,15 +63,12 @@ public class UserController {
     public String loginSubmit(@RequestParam String email, @RequestParam String password, Model model) {
         User user = userService.getUserByEmailAndPassword(email, password);
         if(user!=null){
-            return"redirect:/index";
+            return"redirect:/";
         }else {
-            model.addAttribute("errorMessage", "Invalid email or password");
+            model.addAttribute("error", "Invalid email or password");
             return "login";
         }
     }
-    @GetMapping("/index")
-    public String indexPage() {
-        return "index";
-    }
+
 
 }
