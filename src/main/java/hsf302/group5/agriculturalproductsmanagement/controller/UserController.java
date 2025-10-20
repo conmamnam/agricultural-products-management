@@ -67,7 +67,7 @@ public class UserController {
         if(user!=null){
             return"redirect:/";
         }else {
-            model.addAttribute("errorMessage", "Invalid email or password");
+            model.addAttribute("error", "Invalid email or password");
             return "login";
         }
     }
