@@ -65,11 +65,11 @@ public class UserController {
         if(user!=null){
             return"redirect:/index";
         }else {
-            model.addAttribute("error", "Invalid username or password");
+            model.addAttribute("errorMessage", "Invalid email or password");
             return "login";
         }
     }
-    @GetMapping("")
+    @GetMapping("/index")
     public String indexPage() {
         return "index";
     }
