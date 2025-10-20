@@ -49,7 +49,6 @@ public class UserController {
             return "register";
         }
 
-        user.setEmail("");
         user.setStatus(true);
         user.setRole(roleService.getByRoleId(2));
         userService.addUser(user);
