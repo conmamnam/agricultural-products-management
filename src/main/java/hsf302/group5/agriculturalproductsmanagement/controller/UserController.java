@@ -66,7 +66,7 @@ public class UserController {
         User user = userService.getUserByEmailAndPassword(email, password);
         if(user!=null){
             return"redirect:/";
-        } else {
+        }else {
             model.addAttribute("error", "Invalid email or password");
             return "login";
         }
