@@ -19,7 +19,7 @@ public class ProfileController {
         this.userService = userService;
     }
 
-    // Hiển thị trang hồ sơ
+    // 🟦 Hiển thị trang hồ sơ cá nhân
     @GetMapping("/profile")
     public String profilePage(HttpSession session, Model model) {
         User account = (User) session.getAttribute("account");
@@ -30,7 +30,7 @@ public class ProfileController {
         return "profile";
     }
 
-    // Hiển thị form cập nhật hồ sơ
+    // 🟦 Hiển thị form cập nhật hồ sơ
     @GetMapping("/profile/update")
     public String updateProfilePage(HttpSession session, Model model) {
         User account = (User) session.getAttribute("account");
@@ -41,7 +41,7 @@ public class ProfileController {
         return "profile-update";
     }
 
-    // Lưu cập nhật hồ sơ
+    // 🟩 Xử lý cập nhật hồ sơ
     @PostMapping("/profile/update")
     public String updateProfile(@Valid User accountForm,
                                 BindingResult result,
@@ -57,17 +57,16 @@ public class ProfileController {
             return "redirect:/login";
         }
 
-        // ✅ Cập nhật thông tin
-        currentUser.setFullName(accountForm.getFullName());
-        currentUser.setAddress(accountForm.getAddress());
-        currentUser.setPhoneNumber(accountForm.getPhoneNumber());
+        // ✅ Cập nhật dữ liệu
+        userService.updateProfile(accountForm);
 
-        // ✅ Lưu xuống DB
-        userService.updateProfile(currentUser);
+        // ✅ Lấy lại user đã update từ DB
+        User updatedUser = userService.findById(accountForm.getUserId());
 
-        // ✅ Cập nhật lại session với dữ liệu mới từ DB
-        session.setAttribute("account", userService.findById(currentUser.getUserId()));
+        // ✅ Cập nhật session
+        session.setAttribute("account", updatedUser);
 
+        // ✅ Chuyển hướng về trang hồ sơ
         return "redirect:/profile";
     }
 }

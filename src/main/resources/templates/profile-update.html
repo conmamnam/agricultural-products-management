@@ -77,7 +77,7 @@
     <h2 class="mb-4">Cập nhật hồ sơ cá nhân</h2>
 
     <form th:action="@{/profile/update}" method="post" th:object="${account}">
-        <!-- ID ẩn để Hibernate nhận biết người dùng -->
+        <!-- ID ẩn -->
         <input type="hidden" th:field="*{userId}">
 
         <div class="mb-3 text-start">

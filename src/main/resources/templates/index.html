@@ -1,162 +1,177 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Nông sản sạch</title>
+    <title>Shop Trái Cây Tươi 🍎</title>
     <link rel="icon" type="image/png" href="/image/logo-web.png">
 
     <!-- Bootstrap -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/css/bootstrap.min.css" rel="stylesheet"
-          crossorigin="anonymous">
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/js/bootstrap.bundle.min.js"
-            crossorigin="anonymous"></script>
-
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
-
-    <!-- Font Awesome -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"
-          crossorigin="anonymous" referrerpolicy="no-referrer"/>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
     <!-- Swiper -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css"/>
     <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js" defer></script>
 
+    <!-- Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
+
     <!-- Custom CSS -->
-    <link th:href="@{/css/index.css}" rel="stylesheet">
+    <link th:href="@{/css/style-home.css}" rel="stylesheet">
 </head>
 
 <body>
-<div class="main">
 
-    <!-- Navbar trên cùng -->
-    <nav class="navbar navbar-expand-lg navbar-light bg-light px-4">
-        <a class="navbar-brand d-flex align-items-center" href="/index">
-            <img src="/image/logo-web.png" alt="Logo" style="height: 40px"/>
-            <strong>Nông Sản Sạch</strong>
-        </a>
+<!-- 🔰 HEADER -->
+<header class="shadow-sm sticky-top bg-white">
+    <div class="container d-flex justify-content-between align-items-center py-2">
+        <div class="d-flex align-items-center">
+            <img src="/image/logo-web.png" alt="Logo" style="height:50px;margin-right:8px;">
+            <div>
+                <h5 class="m-0 fw-bold text-success">SHOP TRÁI CÂY TƯƠI</h5>
+                <small class="text-muted">Fresh Fruit & Organic Food</small>
+            </div>
+        </div>
 
-        <!-- Thanh tìm kiếm -->
-        <form class="d-flex ms-auto me-3 w-50" th:action="@{/product/search}" method="post">
-            <input class="form-control me-2" type="search" name="keyword" placeholder="Tìm kiếm sản phẩm..." required/>
-            <button class="btn btn-outline-success" type="submit">
-                <i class="bi bi-search"></i>
-            </button>
+        <form class="d-flex w-50" th:action="@{/product/search}" method="post">
+            <input class="form-control me-2" type="search" name="keyword" placeholder="Tìm kiếm trái cây tươi...">
+            <button class="btn btn-success" type="submit"><i class="bi bi-search"></i></button>
         </form>
 
-        <!-- Tài khoản và giỏ hàng -->
-        <ul class="navbar-nav">
-            <!-- Nếu chưa đăng nhập -->
-            <li class="nav-item" th:if="${session.account == null}">
-                <a class="nav-link login-link" href="/login">
-                    <i class="bi bi-person-circle"></i> Đăng nhập
-                </a>
-            </li>
+        <div>
+            <a th:if="${account == null}" href="/login" class="btn btn-outline-success me-2">
+                <i class="bi bi-person"></i> Đăng nhập
+            </a>
+            <a th:if="${account != null}" href="/profile" class="btn btn-outline-success me-2">
+                <i class="bi bi-person-check"></i> <span th:text="${account.fullName}"></span>
+            </a>
+            <a th:href="@{/cart}" class="btn btn-success"><i class="bi bi-cart3"></i> Giỏ hàng</a>
+        </div>
+    </div>
 
-            <!-- Nếu đã đăng nhập -->
-            <li class="nav-item dropdown" th:if="${session.account != null}">
-                <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button"
-                   data-bs-toggle="dropdown" aria-expanded="false">
-                    <i class="bi bi-person-circle"></i>
-                    <span th:text="${session.account.fullName}">Tài khoản</span>
-                </a>
-                <ul class="dropdown-menu text-center menu-profile" aria-labelledby="userDropdown">
-                    <li><a class="dropdown-item" href="/profile">Hồ sơ</a></li>
-                    <li><a class="dropdown-item" href="/orderManagement">Đơn hàng</a></li>
-                    <li>
-                        <form action="/logout" method="post">
-                            <button class="dropdown-item text-danger" type="submit">Đăng xuất</button>
-                        </form>
-                    </li>
-                </ul>
-            </li>
-
-            <!-- Giỏ hàng -->
-            <li class="nav-item">
-                <a class="nav-link" th:href="@{/cart}">
-                    <i class="bi bi-cart3"></i> Giỏ hàng
-                </a>
-            </li>
-        </ul>
-    </nav>
-
-    <!-- Thanh menu xanh -->
-    <nav class="navbar navbar-expand-lg navbar-dark bg-success">
-        <div class="container d-flex justify-content-between">
-            <div class="collapse navbar-collapse show">
-                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-                    <li class="nav-item mx-2">
-                        <a class="nav-link text-white" href="/index"><i class="bi bi-house-door-fill"></i> Trang chủ</a>
-                    </li>
-                    <li class="nav-item dropdown d-flex align-items-center mx-2">
-                        <a class="nav-link text-white" href="/product/all-product">
-                            <i class="bi bi-shop"></i> Sản phẩm
-                        </a>
-                        <a class="nav-link dropdown-toggle text-white ps-1" href="#" role="button"
-                           data-bs-toggle="dropdown" aria-expanded="false"></a>
-                        <ul class="dropdown-menu">
-                            <li><a class="dropdown-item" th:href="@{/product/category/{type}(type='rau-la')}">Rau lá</a></li>
-                            <li><a class="dropdown-item" th:href="@{/product/category/{type}(type='rau-cu')}">Rau củ</a></li>
-                            <li><a class="dropdown-item" th:href="@{/product/category/{type}(type='nong-san-kho')}">Nông sản khô</a></li>
-                        </ul>
-                    </li>
-                    <li class="nav-item mx-2">
-                        <a class="nav-link text-white" href="/about-us"><i class="bi bi-people-fill"></i> Về chúng tôi</a>
-                    </li>
-                    <li class="nav-item mx-2">
-                        <a class="nav-link text-white" href="https://www.facebook.com/quangwashi">
-                            <i class="bi bi-telephone-fill"></i> Liên hệ
-                        </a>
-                    </li>
-                </ul>
-            </div>
-
-            <!-- Hotline -->
-            <div class="text-white d-none d-lg-block">
-                <i class="bi bi-telephone-fill"></i> Hotline: 1900-1234
-            </div>
+    <!-- 🔗 NAV -->
+    <nav class="navbar navbar-expand-lg navbar-dark" style="background:#016b34;">
+        <div class="container justify-content-center">
+            <ul class="navbar-nav">
+                <li class="nav-item mx-3"><a class="nav-link" href="/home"><i class="bi bi-house-door"></i> TRANG CHỦ</a></li>
+                <li class="nav-item mx-3"><a class="nav-link" href="/about-us"><i class="bi bi-info-circle"></i> GIỚI THIỆU</a></li>
+                <li class="nav-item mx-3"><a class="nav-link" href="/product/all-product"><i class="bi bi-shop"></i> SẢN PHẨM</a></li>
+                <li class="nav-item mx-3"><a class="nav-link" href="#"><i class="bi bi-newspaper"></i> TIN TỨC</a></li>
+                <li class="nav-item mx-3"><a class="nav-link" href="https://www.facebook.com/quangwashi"><i class="bi bi-telephone"></i> LIÊN HỆ</a></li>
+            </ul>
         </div>
     </nav>
+</header>
 
-    <!-- Phần chào mừng -->
-    <div class="introduction">
-        <div class="container header-content">
-            <h1>
-                Chào mừng
-                <span th:if="${session.account != null}" th:text="${session.account.fullName}"></span>
-                <span th:unless="${session.account != null}">bạn</span>
-                đến với Nông Sản Sạch!
-            </h1>
-            <h3>Chúng tôi cung cấp những sản phẩm nông sản tươi, sạch và an toàn cho sức khỏe. Trực tiếp từ nông trại
-                đến bàn ăn của bạn.</h3>
-            <div class="info-header-btn">
-                <form action="/mua-sam">
-                    <button type="submit" class="btn btn-success btn-buy-now">Mua sắm ngay</button>
-                </form>
-                <form action="/about-us">
-                    <button type="submit" class="btn btn-success btn-info">Tìm hiểu ngay</button>
-                </form>
-            </div>
+<!-- 🖼️ SLIDER -->
+<section class="swiper mySwiper">
+    <div class="swiper-wrapper">
+        <div class="swiper-slide">
+            <img src="https://fruitstore.vn/wp-content/uploads/2024/06/trai-cay-1.jpg" alt="Slide 1">
         </div>
+        <div class="swiper-slide">
+            <img src="https://fruitstore.vn/wp-content/uploads/2024/06/trai-cay-2.jpg" alt="Slide 2">
+        </div>
+        <div class="swiper-slide">
+            <img src="https://fruitstore.vn/wp-content/uploads/2024/06/trai-cay-3.jpg" alt="Slide 3">
+        </div>
+    </div>
+    <div class="swiper-pagination"></div>
+</section>
 
-        <!-- Slide quảng cáo -->
-        <div class="auto-slide">
-            <div class="swiper mySwiper">
-                <div class="swiper-wrapper">
-                    <div class="swiper-slide"><img src="https://shopnongsansach.com/wp-content/uploads/thuc-pham-sach-nong-san-sach.jpg" alt="slide 1"></div>
-                    <div class="swiper-slide"><img src="https://shopnongsansach.com/wp-content/uploads/slide1b.jpg" alt="slide 2"></div>
-                    <div class="swiper-slide"><img src="https://thegioinongsan.com/wp-content/uploads/2024/08/tra-xanh.jpg" alt="slide 3"></div>
-                    <div class="swiper-slide"><img src="https://thegioinongsan.com/wp-content/uploads/2024/08/tieu-xanh.jpg" alt="slide 4"></div>
-                    <div class="swiper-slide"><img src="https://thegioinongsan.com/wp-content/uploads/2024/08/cafe.jpg" alt="slide 5"></div>
+<!-- 🍓 SECTION SẢN PHẨM -->
+<section class="container text-center mt-5">
+    <h2 class="fw-bold text-success mb-2">🍇 TRÁI CÂY NHẬP KHẨU 🍓</h2>
+    <p class="text-muted mb-5">Chất lượng cao cấp - Tươi ngon mỗi ngày</p>
+
+    <div class="row g-4">
+        <div class="col-md-4">
+            <div class="card border-0 shadow-sm rounded-4">
+                <img src="https://fruitstore.vn/wp-content/uploads/2024/06/tao-my.jpg" class="card-img-top" alt="Táo Mỹ">
+                <div class="card-body">
+                    <h5 class="card-title text-success fw-bold">Táo Mỹ Fuji</h5>
+                    <p class="card-text text-muted">Ngọt giòn, hương thơm tự nhiên, giàu vitamin C.</p>
+                    <a href="/product/detail/1" class="btn btn-success rounded-pill px-4">Xem chi tiết</a>
                 </div>
-                <div class="swiper-button-next"></div>
-                <div class="swiper-button-prev"></div>
-                <div class="swiper-pagination"></div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card border-0 shadow-sm rounded-4">
+                <img src="https://fruitstore.vn/wp-content/uploads/2024/06/nho-den.jpg" class="card-img-top" alt="Nho đen">
+                <div class="card-body">
+                    <h5 class="card-title text-success fw-bold">Nho Đen Úc</h5>
+                    <p class="card-text text-muted">Tươi ngon, mọng nước, vị ngọt đậm đà, không hạt.</p>
+                    <a href="/product/detail/2" class="btn btn-success rounded-pill px-4">Xem chi tiết</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card border-0 shadow-sm rounded-4">
+                <img src="https://fruitstore.vn/wp-content/uploads/2024/06/dau-tay.jpg" class="card-img-top" alt="Dâu tây">
+                <div class="card-body">
+                    <h5 class="card-title text-success fw-bold">Dâu Tây Hàn Quốc</h5>
+                    <p class="card-text text-muted">Màu sắc rực rỡ, vị ngọt thanh, giàu dưỡng chất.</p>
+                    <a href="/product/detail/3" class="btn btn-success rounded-pill px-4">Xem chi tiết</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<!-- 🌿 FOOTER -->
+<footer class="footer text-white mt-5">
+    <div class="container py-5">
+        <div class="row align-items-center">
+            <!-- 🏢 CỘT 1: THÔNG TIN SHOP -->
+            <div class="col-md-8">
+                <h5 class="fw-bold text-uppercase mb-3">SHOP TRÁI CÂY TƯƠI 🍉</h5>
+                <p class="mb-1"><i class="bi bi-geo-alt"></i> 248A Nơ Trang Long, P.12, Q.Bình Thạnh, TP.HCM</p>
+                <p class="mb-1"><i class="bi bi-telephone"></i> Hotline: <b>1900-1234</b></p>
+                <p class="mb-1"><i class="bi bi-envelope"></i> Email: <b>info@traicaytuoi.vn</b></p>
+                <p class="small text-secondary mt-3 mb-0">
+                    Giấy chứng nhận ĐKKD số: <b>0314804369</b> – Cấp ngày 01/08/2024<br>
+                    © 2025 Shop Trái Cây Tươi. All rights reserved.
+                </p>
+            </div>
+
+            <!-- 💬 CỘT 2: FANPAGE -->
+            <div class="col-md-4 text-center mt-4 mt-md-0">
+                <div class="bg-white rounded p-3 shadow-sm mx-auto" style="max-width:230px;">
+                    <img src="https://scontent.xx.fbcdn.net/v/t1.15752-9/422912516_1220979379709086_3669075869433452542_n.png"
+                         alt="Fanpage" class="img-fluid rounded" style="max-height:120px;">
+                    <p class="text-dark small mt-2 mb-0">
+                        <b>Shop Trái Cây Tươi</b><br>4.2K người theo dõi
+                    </p>
+                    <button class="btn btn-success btn-sm mt-2 px-3">Theo dõi Trang</button>
+                </div>
+
+                <div class="d-flex justify-content-center gap-3 mt-3">
+                    <a href="#" class="text-white fs-4"><i class="fab fa-facebook"></i></a>
+                    <a href="#" class="text-white fs-4"><i class="fab fa-tiktok"></i></a>
+                    <a href="#" class="text-white fs-4"><i class="fab fa-instagram"></i></a>
+                    <a href="#" class="text-white fs-4"><i class="fab fa-zalo"></i></a>
+                </div>
             </div>
         </div>
     </div>
 
-    <!-- (Giữ nguyên phần danh mục, sản phẩm, footer của bạn như cũ) -->
+    <!-- DÒNG DƯỚI CÙNG -->
+    <div class="text-center py-2 small" style="background:#013d20;">
+        © 2025 SHOP TRÁI CÂY TƯƠI – Fresh Fruit & Organic Food
+    </div>
+</footer>
 
-</div>
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        new Swiper(".mySwiper", {
+            loop: true,
+            autoplay: { delay: 3000 },
+            pagination: { el: ".swiper-pagination", clickable: true }
+        });
+    });
+</script>
 </body>
 </html>
+
