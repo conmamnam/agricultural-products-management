@@ -8,7 +8,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 @Controller
 public class HomepageController {
 
-    @GetMapping({"/", "/index"})
+    // ✅ Mapping cho cả "/", "/index", và "/home"
+    @GetMapping({"/", "/index", "/home"})
     public String homepage(HttpSession session, Model model) {
         // Lấy thông tin người dùng trong session (nếu có)
         Object account = session.getAttribute("account");
