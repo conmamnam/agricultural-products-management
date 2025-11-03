@@ -35,6 +35,7 @@ public class User {
     private String address;
 
     // ⚙️ Không validate khi cập nhật hồ sơ
+    @NotBlank(message = "Email không được để trống")
     @Column(length = 100, nullable = false)
     private String email;
 
