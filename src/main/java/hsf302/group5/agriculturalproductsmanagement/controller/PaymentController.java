@@ -36,6 +36,18 @@ public class PaymentController {
         return "redirect:" + paymentUrl;
     }
 
+    // ✅ MỚI THÊM - Tạo thanh toán từ Cart
+    @GetMapping("/payment/create")
+    public String createPaymentFromCart(
+            @RequestParam("orderId") int orderId,
+            @RequestParam("amount") long amount,
+            HttpServletRequest request
+    ) {
+        String orderInfo = "Thanh toan don hang #" + orderId;
+        String paymentUrl = paymentService.createVnPayPayment(orderId, amount, orderInfo, request);
+        return "redirect:" + paymentUrl;
+    }
+
     // 2. [GET] /payment/vnpayReturn
     @GetMapping("/payment/vnpayReturn")
     public String handleVnPayReturn(@RequestParam Map<String, String> params, Model model) {
