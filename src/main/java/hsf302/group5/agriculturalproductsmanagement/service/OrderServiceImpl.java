@@ -5,6 +5,7 @@ import hsf302.group5.agriculturalproductsmanagement.repository.OrderRepository;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -30,5 +31,10 @@ public class OrderServiceImpl implements OrderService {
     @Override
     public Optional<Order> getOrderById(int id) {
         return orderRepository.findById(id);
+    }
+
+    @Override
+    public List<Order> getOrdersByUserId(int userId) {
+        return orderRepository.findByUser_UserId(userId);
     }
 }
