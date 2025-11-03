@@ -14,17 +14,12 @@ import java.util.*;
 @Service
 public class PaymentServiceImpl implements PaymentService {
 
-    // ⚠️ QUAN TRỌNG: Bạn BẮT BUỘC phải điền thông tin thật của bạn vào đây
-    // Lấy từ: https://sandbox.vnpayment.vn/merchantv2/Users/Login.htm
-    private static final String VNP_TMN_CODE = "P4OTEIOA"; // Điền TmnCode của bạn
-    private static final String VNP_HASH_SECRET = "ZH6G64H90Z2GGLL920W9HRL0DZTAUZXV"; // Điền HashSecret của bạn
+    private static final String VNP_TMN_CODE = "U4VK6LCQ";
+    private static final String VNP_HASH_SECRET = "76KRZITFGNS58W2RNOU5Z1B5AC2OJ3K9";
 
     private static final String VNP_URL = "https://sandbox.vnpayment.vn/paymentv2/vpcpay.html";
-    private static final String VNP_RETURN_URL = "http://shoptraicaytuoik19.com/payment/vnpayReturn";
+    private static final String VNP_RETURN_URL = "https://jubilant-hattie-intangibly.ngrok-free.dev/payment/vnpayReturn";
 
-    /**
-     * Hàm tiện ích tạo chữ ký HMAC-SHA512
-     */
     private String hmacSHA512(String key, String data) {
         try {
             Mac hmacSha512 = Mac.getInstance("HmacSHA512");
@@ -145,7 +140,9 @@ public class PaymentServiceImpl implements PaymentService {
             if ("00".equals(responseCode)) {
                 result.put("status", "success");
                 result.put("message", "Thanh toán thành công");
-                // ... (các thông tin khác)
+                result.put("orderId", params.get("vnp_TxnRef"));
+                result.put("bankCode", params.get("vnp_BankCode"));
+                result.put("amount", params.get("vnp_Amount"));
             } else {
                 result.put("status", "fail");
                 result.put("message", "Thanh toán thất bại (Mã lỗi: " + responseCode + ")");
