@@ -49,8 +49,15 @@ public class UserController {
             return "register";
         }
 
+        // Get role and check if it exists
+        Role userRole = roleService.getByRoleId(2);
+        if (userRole == null) {
+            model.addAttribute("error", "Default role not found. Please contact administrator.");
+            return "register";
+        }
+
         user.setStatus(true);
-        user.setRole(roleService.getByRoleId(2));
+        user.setRole(userRole);
         userService.addUser(user);
 
         return "redirect:/";
