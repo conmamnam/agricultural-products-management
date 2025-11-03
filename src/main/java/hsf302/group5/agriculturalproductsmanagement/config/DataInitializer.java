@@ -2,8 +2,10 @@ package hsf302.group5.agriculturalproductsmanagement.config;
 
 import hsf302.group5.agriculturalproductsmanagement.entity.Category;
 import hsf302.group5.agriculturalproductsmanagement.entity.Product;
+import hsf302.group5.agriculturalproductsmanagement.entity.Role;
 import hsf302.group5.agriculturalproductsmanagement.repository.CategoryRepository;
 import hsf302.group5.agriculturalproductsmanagement.repository.ProductRepository;
+import hsf302.group5.agriculturalproductsmanagement.repository.RoleRepository;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 
@@ -14,18 +16,27 @@ public class DataInitializer implements CommandLineRunner {
 
     private final ProductRepository productRepository;
     private final CategoryRepository categoryRepository;
+    private final RoleRepository roleRepository;
 
     public DataInitializer(
             ProductRepository productRepository,
-            CategoryRepository categoryRepository
+            CategoryRepository categoryRepository,
+            RoleRepository roleRepository
     ) {
         this.productRepository = productRepository;
         this.categoryRepository = categoryRepository;
+        this.roleRepository = roleRepository;
     }
 
     @Override
     public void run(String... args) throws Exception {
         // Initialize data here if needed
+
+        // Role
+        Role adminRole = new Role("admin");
+        Role userRole = new Role("user");
+        roleRepository.save(adminRole);
+        roleRepository.save(userRole);
 
         // Category
         Category berry = new Category("Quả mọng"); // nho, kiwi, thanh long

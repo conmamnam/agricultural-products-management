@@ -70,7 +70,7 @@ public class UserController {
                 return "redirect:/admin/dashboard";
             }
             return "redirect:/";
-        }else {
+        } else {
             model.addAttribute("error", "Invalid email or password");
             return "login";
         }
