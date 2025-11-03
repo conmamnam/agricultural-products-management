@@ -16,11 +16,11 @@ public class PaymentServiceImpl implements PaymentService {
 
     // ⚠️ QUAN TRỌNG: Bạn BẮT BUỘC phải điền thông tin thật của bạn vào đây
     // Lấy từ: https://sandbox.vnpayment.vn/merchantv2/Users/Login.htm
-    private static final String VNP_TMN_CODE = "YOUR_VNP_TMN_CODE"; // Điền TmnCode của bạn
-    private static final String VNP_HASH_SECRET = "YOUR_VNP_HASH_SECRET"; // Điền HashSecret của bạn
+    private static final String VNP_TMN_CODE = "P4OTEIOA"; // Điền TmnCode của bạn
+    private static final String VNP_HASH_SECRET = "ZH6G64H90Z2GGLL920W9HRL0DZTAUZXV"; // Điền HashSecret của bạn
 
     private static final String VNP_URL = "https://sandbox.vnpayment.vn/paymentv2/vpcpay.html";
-    private static final String VNP_RETURN_URL = "http://localhost:8080/payment/vnpayReturn"; // URL trả về
+    private static final String VNP_RETURN_URL = "http://shoptraicaytuoik19.com/payment/vnpayReturn";
 
     /**
      * Hàm tiện ích tạo chữ ký HMAC-SHA512
