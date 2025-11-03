@@ -6,6 +6,8 @@ import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 public class UserServiceImpl implements UserService {
 
@@ -49,5 +51,10 @@ public class UserServiceImpl implements UserService {
     @Override
     public User findById(int userId) {
         return userRepository.findById(userId).orElse(null);
+    }
+
+    @Override
+    public List<User> getAll() {
+        return userRepository.findAll();
     }
 }

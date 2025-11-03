@@ -64,9 +64,13 @@ public class UserController {
     @PostMapping("/login")
     public String loginSubmit(@RequestParam String email, @RequestParam String password, Model model) {
         User user = userService.getUserByEmailAndPassword(email, password);
-        if(user!=null){
-            return"redirect:/";
-        } else {
+        if (user != null) {
+
+            if (user.getRole().getRoleName().equalsIgnoreCase("admin")) {
+                return "redirect:/admin/dashboard";
+            }
+            return "redirect:/";
+        }else {
             model.addAttribute("error", "Invalid email or password");
             return "login";
         }
