@@ -18,7 +18,39 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
 
     <!-- Custom CSS -->
-    <link th:href="@{/css/style-home.css}" rel="stylesheet">
+    <link th:href="@{/css/index.css}" rel="stylesheet">
+
+    <style>
+        /* 🎞️ SLIDER chỉnh lại cho mượt */
+        .swiper {
+            width: 100%;
+            height: 450px;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .swiper-slide {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .swiper-slide img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        /* Pagination nhỏ gọn */
+        .swiper-pagination-bullet {
+            background: #fff;
+            opacity: 0.8;
+        }
+
+        .swiper-pagination-bullet-active {
+            background: #02b875;
+        }
+    </style>
 </head>
 
 <body>
@@ -64,17 +96,20 @@
     </nav>
 </header>
 
-<!-- 🖼️ SLIDER -->
+<!-- 🖼️ SLIDER (4 ảnh mới, chạy từ từ) -->
 <section class="swiper mySwiper">
     <div class="swiper-wrapper">
         <div class="swiper-slide">
-            <img src="https://fruitstore.vn/wp-content/uploads/2024/06/trai-cay-1.jpg" alt="Slide 1">
+            <img src="https://cdnv2.tgdd.vn/bhx-static/bhx/Products/Images/8788/313132/bhx/chuoi-gia-giong-nam-my-1kg_202505201047413543.jpg" alt="Chuối Nam Mỹ">
         </div>
         <div class="swiper-slide">
-            <img src="https://fruitstore.vn/wp-content/uploads/2024/06/trai-cay-2.jpg" alt="Slide 2">
+            <img src="https://cdnv2.tgdd.vn/bhx-static/bhx/Products/Images/8788/358219/bhx/cam-sanh-trai-tu-130g-tro-len-clone_202510211010245505.jpg" alt="Cam Sành">
         </div>
         <div class="swiper-slide">
-            <img src="https://fruitstore.vn/wp-content/uploads/2024/06/trai-cay-3.jpg" alt="Slide 3">
+            <img src="https://cdnv2.tgdd.vn/bhx-static/bhx/Products/Images/8788/312875/bhx/nho-mau-don-noi-dia-trung-500g_202506160955228843.jpg" alt="Nho Mẫu Đơn">
+        </div>
+        <div class="swiper-slide">
+            <img src="https://cdnv2.tgdd.vn/bhx-static/bhx/Products/Images/8788/358118/bhx/dua-hau-do-trai-25-27kg-1-trai-clone_202510170938106836.jpg" alt="Dưa Hấu Đỏ">
         </div>
     </div>
     <div class="swiper-pagination"></div>
@@ -86,92 +121,108 @@
     <p class="text-muted mb-5">Chất lượng cao cấp - Tươi ngon mỗi ngày</p>
 
     <div class="row g-4">
-        <div class="col-md-4">
-            <div class="card border-0 shadow-sm rounded-4">
-                <img src="https://fruitstore.vn/wp-content/uploads/2024/06/tao-my.jpg" class="card-img-top" alt="Táo Mỹ">
+        <!-- giữ nguyên phần sản phẩm -->
+        <div class="col-md-3 col-sm-6">
+            <div class="card border-0 shadow-sm rounded-4 h-100">
+                <img src="https://cdnv2.tgdd.vn/bhx-static/bhx/Products/Images/8788/313132/bhx/chuoi-gia-giong-nam-my-1kg_202505201047413543.jpg"
+                     class="card-img-top" alt="Chuối Nam Mỹ">
                 <div class="card-body">
-                    <h5 class="card-title text-success fw-bold">Táo Mỹ Fuji</h5>
-                    <p class="card-text text-muted">Ngọt giòn, hương thơm tự nhiên, giàu vitamin C.</p>
-                    <a href="/product/detail/1" class="btn btn-success rounded-pill px-4">Xem chi tiết</a>
+                    <h5 class="card-title text-success fw-bold">Chuối Nam Mỹ</h5>
+                    <p class="card-text text-muted">Chuối chín vàng thơm ngon, giàu kali và năng lượng.</p>
+                    <a href="/product/detail/4" class="btn btn-success rounded-pill px-4">Xem chi tiết</a>
                 </div>
             </div>
         </div>
 
-        <div class="col-md-4">
-            <div class="card border-0 shadow-sm rounded-4">
-                <img src="https://fruitstore.vn/wp-content/uploads/2024/06/nho-den.jpg" class="card-img-top" alt="Nho đen">
+        <div class="col-md-3 col-sm-6">
+            <div class="card border-0 shadow-sm rounded-4 h-100">
+                <img src="https://cdnv2.tgdd.vn/bhx-static/bhx/Products/Images/8788/358219/bhx/cam-sanh-trai-tu-130g-tro-len-clone_202510211010245505.jpg"
+                     class="card-img-top" alt="Cam Sành">
                 <div class="card-body">
-                    <h5 class="card-title text-success fw-bold">Nho Đen Úc</h5>
-                    <p class="card-text text-muted">Tươi ngon, mọng nước, vị ngọt đậm đà, không hạt.</p>
-                    <a href="/product/detail/2" class="btn btn-success rounded-pill px-4">Xem chi tiết</a>
+                    <h5 class="card-title text-success fw-bold">Cam Sành</h5>
+                    <p class="card-text text-muted">Vỏ mỏng, vị ngọt thanh, giàu vitamin C tốt cho sức khỏe.</p>
+                    <a href="/product/detail/5" class="btn btn-success rounded-pill px-4">Xem chi tiết</a>
                 </div>
             </div>
         </div>
 
-        <div class="col-md-4">
-            <div class="card border-0 shadow-sm rounded-4">
-                <img src="https://fruitstore.vn/wp-content/uploads/2024/06/dau-tay.jpg" class="card-img-top" alt="Dâu tây">
+        <div class="col-md-3 col-sm-6">
+            <div class="card border-0 shadow-sm rounded-4 h-100">
+                <img src="https://cdnv2.tgdd.vn/bhx-static/bhx/Products/Images/8788/312875/bhx/nho-mau-don-noi-dia-trung-500g_202506160955228843.jpg"
+                     class="card-img-top" alt="Nho Mẫu Đơn">
                 <div class="card-body">
-                    <h5 class="card-title text-success fw-bold">Dâu Tây Hàn Quốc</h5>
-                    <p class="card-text text-muted">Màu sắc rực rỡ, vị ngọt thanh, giàu dưỡng chất.</p>
-                    <a href="/product/detail/3" class="btn btn-success rounded-pill px-4">Xem chi tiết</a>
+                    <h5 class="card-title text-success fw-bold">Nho Mẫu Đơn</h5>
+                    <p class="card-text text-muted">Trái to, mọng nước, vị ngọt thanh, thơm nhẹ tự nhiên.</p>
+                    <a href="/product/detail/6" class="btn btn-success rounded-pill px-4">Xem chi tiết</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3 col-sm-6">
+            <div class="card border-0 shadow-sm rounded-4 h-100">
+                <img src="https://cdnv2.tgdd.vn/bhx-static/bhx/Products/Images/8788/358118/bhx/dua-hau-do-trai-25-27kg-1-trai-clone_202510170938106836.jpg"
+                     class="card-img-top" alt="Dưa Hấu Đỏ">
+                <div class="card-body">
+                    <h5 class="card-title text-success fw-bold">Dưa Hấu Đỏ</h5>
+                    <p class="card-text text-muted">Thịt đỏ ngọt thanh, giải nhiệt tốt, giàu vitamin A và C.</p>
+                    <a href="/product/detail/7" class="btn btn-success rounded-pill px-4">Xem chi tiết</a>
                 </div>
             </div>
         </div>
     </div>
 </section>
-<!-- 🌿 FOOTER -->
-<footer class="footer text-white mt-5">
-    <div class="container py-5">
-        <div class="row align-items-center">
-            <!-- 🏢 CỘT 1: THÔNG TIN SHOP -->
-            <div class="col-md-8">
-                <h5 class="fw-bold text-uppercase mb-3">SHOP TRÁI CÂY TƯƠI 🍉</h5>
-                <p class="mb-1"><i class="bi bi-geo-alt"></i> 248A Nơ Trang Long, P.12, Q.Bình Thạnh, TP.HCM</p>
-                <p class="mb-1"><i class="bi bi-telephone"></i> Hotline: <b>1900-1234</b></p>
-                <p class="mb-1"><i class="bi bi-envelope"></i> Email: <b>info@traicaytuoi.vn</b></p>
-                <p class="small text-secondary mt-3 mb-0">
-                    Giấy chứng nhận ĐKKD số: <b>0314804369</b> – Cấp ngày 01/08/2024<br>
-                    © 2025 Shop Trái Cây Tươi. All rights reserved.
-                </p>
-            </div>
 
-            <!-- 💬 CỘT 2: FANPAGE -->
-            <div class="col-md-4 text-center mt-4 mt-md-0">
-                <div class="bg-white rounded p-3 shadow-sm mx-auto" style="max-width:230px;">
-                    <img src="https://scontent.xx.fbcdn.net/v/t1.15752-9/422912516_1220979379709086_3669075869433452542_n.png"
-                         alt="Fanpage" class="img-fluid rounded" style="max-height:120px;">
-                    <p class="text-dark small mt-2 mb-0">
-                        <b>Shop Trái Cây Tươi</b><br>4.2K người theo dõi
-                    </p>
-                    <button class="btn btn-success btn-sm mt-2 px-3">Theo dõi Trang</button>
+<!-- 🌿 FOOTER giữ nguyên -->
+<footer class="footer text-white mt-5">
+    <div class="footer-main">
+        <div class="container py-5">
+            <div class="row align-items-center">
+                <div class="col-md-8">
+                    <h5 class="fw-bold text-uppercase mb-3">SHOP TRÁI CÂY TƯƠI 🍉</h5>
+                    <p class="mb-1"><i class="bi bi-geo-alt"></i> 248A Nơ Trang Long, P.12, Q.Bình Thạnh, TP.HCM</p>
+                    <p class="mb-1"><i class="bi bi-telephone"></i> Hotline: <b>1900-1234</b></p>
+                    <p class="mb-1"><i class="bi bi-envelope"></i> Email: <b>info@traicaytuoi.vn</b></p>
+                    <p class="small mt-3 mb-0">Giấy chứng nhận ĐKKD số: <b>0314804369</b> – Cấp ngày 01/08/2024<br>© 2025 Shop Trái Cây Tươi. All rights reserved.</p>
                 </div>
 
-                <div class="d-flex justify-content-center gap-3 mt-3">
-                    <a href="#" class="text-white fs-4"><i class="fab fa-facebook"></i></a>
-                    <a href="#" class="text-white fs-4"><i class="fab fa-tiktok"></i></a>
-                    <a href="#" class="text-white fs-4"><i class="fab fa-instagram"></i></a>
-                    <a href="#" class="text-white fs-4"><i class="fab fa-zalo"></i></a>
+                <div class="col-md-4 text-center mt-4 mt-md-0">
+                    <div class="bg-white rounded p-3 shadow-sm mx-auto" style="max-width:230px;">
+                        <img src="https://scontent.xx.fbcdn.net/v/t1.15752-9/422912516_1220979379709086_3669075869433452542_n.png"
+                             alt="Fanpage" class="img-fluid rounded" style="max-height:120px;">
+                        <p class="text-dark small mt-2 mb-0">
+                            <b>Shop Trái Cây Tươi</b><br>4.2K người theo dõi
+                        </p>
+                        <button class="btn btn-success btn-sm mt-2 px-3">Theo dõi Trang</button>
+                    </div>
+
+                    <div class="d-flex justify-content-center gap-3 mt-3">
+                        <a href="#" class="text-white fs-4"><i class="fab fa-facebook"></i></a>
+                        <a href="#" class="text-white fs-4"><i class="fab fa-tiktok"></i></a>
+                        <a href="#" class="text-white fs-4"><i class="fab fa-instagram"></i></a>
+                        <a href="#" class="text-white fs-4"><i class="fab fa-zalo"></i></a>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
-
-    <!-- DÒNG DƯỚI CÙNG -->
-    <div class="text-center py-2 small" style="background:#013d20;">
+    <div class="footer-bottom text-center py-2 small">
         © 2025 SHOP TRÁI CÂY TƯƠI – Fresh Fruit & Organic Food
     </div>
 </footer>
 
+<!-- JS cho slider mượt -->
 <script>
     document.addEventListener("DOMContentLoaded", function() {
         new Swiper(".mySwiper", {
             loop: true,
-            autoplay: { delay: 3000 },
-            pagination: { el: ".swiper-pagination", clickable: true }
+            autoplay: { delay: 3500, disableOnInteraction: false },
+            pagination: { el: ".swiper-pagination", clickable: true },
+            effect: "fade",
+            fadeEffect: { crossFade: true },
+            speed: 1000
         });
     });
 </script>
+
 </body>
 </html>
-
