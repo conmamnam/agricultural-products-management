@@ -45,7 +45,7 @@ public class PaymentController {
     ) {
         String orderInfo = "Thanh toan don hang #" + orderId;
         String paymentUrl = paymentService.createVnPayPayment(orderId, amount, orderInfo, request);
-        return "redirect:" + paymentUrl;
+        return paymentUrl;
     }
 
     // 2. [GET] /payment/vnpayReturn
