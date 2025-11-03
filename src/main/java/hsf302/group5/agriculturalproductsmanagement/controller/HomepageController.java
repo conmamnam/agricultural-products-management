@@ -8,13 +8,19 @@ import org.springframework.web.bind.annotation.GetMapping;
 @Controller
 public class HomepageController {
 
-    // ✅ Mapping cho cả "/", "/index", và "/home"
+    // ✅ Mapping cho "/" - "/index" - "/home"
     @GetMapping({"/", "/index", "/home"})
     public String homepage(HttpSession session, Model model) {
-        // Lấy thông tin người dùng trong session (nếu có)
         Object account = session.getAttribute("account");
         model.addAttribute("account", account);
+        return "index"; // tên file trong templates, KHÔNG có .html
+    }
 
-        return "index"; // Trả về file templates/index.html
+    // ✅ Trang Giới thiệu
+    @GetMapping("/about-us")
+    public String aboutUs(HttpSession session, Model model) {
+        Object account = session.getAttribute("account");
+        model.addAttribute("account", account);
+        return "about-us"; // cũng nằm trong /templates
     }
 }
