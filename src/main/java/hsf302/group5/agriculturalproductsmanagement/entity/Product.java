@@ -19,10 +19,10 @@ public class Product {
     @Column(name = "product_id", updatable = false)
     private int productId;
 
-    @Column(name = "product_name", length = 150, nullable = false)
+    @Column(name = "product_name", length = 150, nullable = false, columnDefinition = "NVARCHAR(150)")
     private String productName;
 
-    @Column(length = 255)
+    @Column(length = 255, columnDefinition = "NVARCHAR(255)")
     private String description;
 
     @Column(nullable = false)
