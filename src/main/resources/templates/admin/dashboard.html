@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{admin/admindashboard}">
+<head>
+    <title>Dashboard</title>
+
+</head>
+<body>
+<section th:fragment="mainContent">
+    <h1>Dashboard</h1>
+    <div class="stats d-flex gap-4 flex-wrap">
+        <div class="card p-3 text-center flex-fill">Total Users: <span th:text="${totalUsers}"></span></div>
+        <div class="card p-3 text-center flex-fill">Total Products: <span th:text="${totalProducts}"></span></div>
+        <div class="card p-3 text-center flex-fill">Total Orders: <span th:text="${totalOrders}"></span></div>
+    </div>
+</section>
+
+</body>
+</html>
