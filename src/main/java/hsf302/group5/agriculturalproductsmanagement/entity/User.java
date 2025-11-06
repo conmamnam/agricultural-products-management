@@ -36,7 +36,7 @@ public class User {
 
     // ⚙️ Không validate khi cập nhật hồ sơ
     @NotBlank(message = "Email không được để trống")
-    @Column(length = 100, nullable = false)
+    @Column(length = 100, nullable = false, unique = true)
     private String email;
 
     @Column(length = 255, nullable = false)
@@ -52,4 +52,12 @@ public class User {
 
     @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
     private List<Order> orders;
+
+    public User(String fullName, String phoneNumber, String address, String email, String password) {
+        this.fullName = fullName;
+        this.phoneNumber = phoneNumber;
+        this.address = address;
+        this.email = email;
+        this.password = password;
+    }
 }
