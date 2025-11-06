@@ -33,7 +33,12 @@ public class AuthController {
             // Lưu user entity trực tiếp vào session
             session.setAttribute("account", user);
             
-            // Redirect về trang chủ
+            // Kiểm tra role và redirect tương ứng
+            if (user.getRole() != null && "admin".equalsIgnoreCase(user.getRole().getRoleName())) {
+                return "redirect:/admin/dashboard";
+            }
+            
+            // User thường redirect về trang chủ
             return "redirect:/home";
         } else {
             model.addAttribute("error", "Email hoặc mật khẩu không đúng");
