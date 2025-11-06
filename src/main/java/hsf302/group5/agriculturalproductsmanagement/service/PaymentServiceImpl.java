@@ -1,6 +1,7 @@
 package hsf302.group5.agriculturalproductsmanagement.service;
 
 import jakarta.servlet.http.HttpServletRequest;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import javax.crypto.Mac;
@@ -14,11 +15,17 @@ import java.util.*;
 @Service
 public class PaymentServiceImpl implements PaymentService {
 
-    private static final String VNP_TMN_CODE = "U4VK6LCQ";
-    private static final String VNP_HASH_SECRET = "76KRZITFGNS58W2RNOU5Z1B5AC2OJ3K9";
+    @Value("${vnpay.tmn-code}")
+    private String VNP_TMN_CODE;
 
-    private static final String VNP_URL = "https://sandbox.vnpayment.vn/paymentv2/vpcpay.html";
-    private static final String VNP_RETURN_URL = "https://jubilant-hattie-intangibly.ngrok-free.dev/payment/vnpayReturn";
+    @Value("${vnpay.hash-secret}")
+    private String VNP_HASH_SECRET;
+
+    @Value("${vnpay.url}")
+    private String VNP_URL;
+
+    @Value("${vnpay.return-url}")
+    private String VNP_RETURN_URL;
 
     private String hmacSHA512(String key, String data) {
         try {
@@ -36,7 +43,6 @@ public class PaymentServiceImpl implements PaymentService {
             throw new RuntimeException("Không thể tạo chữ ký HmacSHA512", e);
         }
     }
-
     @Override
     public String createVnPayPayment(int orderId, long amount, String orderInfo, HttpServletRequest request) {
 
