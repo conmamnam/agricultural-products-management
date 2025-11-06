@@ -57,16 +57,16 @@ public class ProfileController {
             return "redirect:/login";
         }
 
-        // ✅ Cập nhật dữ liệu
+        // Cập nhật dữ liệu
         userService.updateProfile(accountForm);
 
-        // ✅ Lấy lại user đã update từ DB
+        // Lấy lại user đã update từ DB
         User updatedUser = userService.findById(accountForm.getUserId());
 
-        // ✅ Cập nhật session
+        // Cập nhật session
         session.setAttribute("account", updatedUser);
 
-        // ✅ Chuyển hướng về trang hồ sơ
+        // Chuyển hướng về trang hồ sơ
         return "redirect:/profile";
     }
 }

@@ -4,7 +4,6 @@ import hsf302.group5.agriculturalproductsmanagement.entity.Role;
 import hsf302.group5.agriculturalproductsmanagement.entity.User;
 import hsf302.group5.agriculturalproductsmanagement.service.RoleServiceImpl;
 import hsf302.group5.agriculturalproductsmanagement.service.UserServiceImpl;
-import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -20,12 +19,14 @@ public class UserController {
     private final UserServiceImpl userService;
     private final RoleServiceImpl roleService;
 
-    public UserController(UserServiceImpl userService, RoleServiceImpl roleService) {
+    public UserController(
+            UserServiceImpl userService,
+            RoleServiceImpl roleService
+    ) {
         this.userService = userService;
         this.roleService = roleService;
     }
 
-    // ========== ĐĂNG KÝ ==========
     @GetMapping("/register")
     public ModelAndView registerPage() {
         ModelAndView mav = new ModelAndView("register");
@@ -34,46 +35,51 @@ public class UserController {
     }
 
     @PostMapping("/register")
-    public String registerPost(@Valid User user, BindingResult bindingResult, Model model) {
+    public String registerPost(
+            @Valid User user,
+            BindingResult bindingResult,
+            Model model
+    ) {
         if (bindingResult.hasErrors()) {
             return "register";
         }
+
         if (userService.getByPhoneNumber(user.getPhoneNumber()) != null) {
-            model.addAttribute("phoneNumberExist", "Số điện thoại đã được sử dụng");
+            model.addAttribute("phoneNumberExist", "Phone number is already in use");
             return "register";
         }
+
+        // Get role and check if it exists
+        Role userRole = roleService.getByRoleId(2);
+        if (userRole == null) {
+            model.addAttribute("error", "Default role not found. Please contact administrator.");
+            return "register";
+        }
+
         user.setStatus(true);
-        user.setRole(roleService.getByRoleId(2)); // ROLE_CUSTOMER
+        user.setRole(userRole);
         userService.addUser(user);
-        model.addAttribute("success", "Đăng ký thành công! Vui lòng đăng nhập.");
-        return "redirect:/login";
+
+        return "redirect:/";
     }
 
-    // ========== ĐĂNG NHẬP ==========
     @GetMapping("/login")
     public String loginPage() {
         return "login";
     }
 
     @PostMapping("/login")
-    public String loginSubmit(@RequestParam String email,
-                              @RequestParam String password,
-                              HttpSession session,
-                              Model model) {
+    public String loginSubmit(@RequestParam String email, @RequestParam String password, Model model) {
         User user = userService.getUserByEmailAndPassword(email, password);
         if (user != null) {
-            session.setAttribute("account", user);
-            return "redirect:/index";
+
+            if (user.getRole().getRoleName().equalsIgnoreCase("admin")) {
+                return "redirect:/admin/dashboard";
+            }
+            return "redirect:/";
         } else {
-            model.addAttribute("error", "Sai email hoặc mật khẩu!");
+            model.addAttribute("error", "Invalid email or password");
             return "login";
         }
-    }
-
-    // ========== ĐĂNG XUẤT ==========
-    @PostMapping("/logout")
-    public String logout(HttpSession session) {
-        session.invalidate();
-        return "redirect:/login";
     }
 }

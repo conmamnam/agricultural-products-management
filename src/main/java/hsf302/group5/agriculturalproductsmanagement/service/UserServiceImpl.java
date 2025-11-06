@@ -3,8 +3,9 @@ package hsf302.group5.agriculturalproductsmanagement.service;
 import hsf302.group5.agriculturalproductsmanagement.entity.User;
 import hsf302.group5.agriculturalproductsmanagement.repository.UserRepository;
 import jakarta.transaction.Transactional;
-import jakarta.validation.Valid;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -30,10 +31,10 @@ public class UserServiceImpl implements UserService {
         return userRepository.findByEmailAndPassword(email, password);
     }
 
-    // ✅ Cập nhật hồ sơ (chỉ sửa 3 trường được phép)
+    // Cập nhật hồ sơ (chỉ sửa 3 trường được phép)
     @Override
     @Transactional
-    public void updateProfile(@Valid User user) {
+    public void updateProfile(User user) {
         User existing = userRepository.findById(user.getUserId())
                 .orElseThrow(() -> new IllegalArgumentException("Không tìm thấy người dùng"));
 
@@ -49,5 +50,10 @@ public class UserServiceImpl implements UserService {
     @Override
     public User findById(int userId) {
         return userRepository.findById(userId).orElse(null);
+    }
+
+    @Override
+    public List<User> getAll() {
+        return userRepository.findAll();
     }
 }

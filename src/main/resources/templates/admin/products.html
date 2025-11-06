@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{admin/admindashboard}">
+<body>
+<section th:fragment="mainContent">
+    <h2 class="mb-3">Quản lý sản phẩm</h2>
+    <div class="mb-3">
+        <a class="btn btn-primary" th:href="@{/admin/products/add}">Thêm sản phẩm</a>
+    </div>
+    <table class="table table-hover table-striped align-middle">
+        <thead>
+        <tr><th>ID</th><th>Name</th><th>Price</th><th>Stock</th><th>Actions</th></tr>
+        </thead>
+        <tbody>
+        <tr th:each="p : ${products}">
+            <td th:text="${p.productId}"></td>
+            <td th:text="${p.productName}"></td>
+            <td th:text="${#numbers.formatDecimal(p.price,0,'COMMA',0,'POINT')} + ' ₫'"></td>
+            <td th:text="${p.stock}"></td>
+            <td>
+                <a class="btn btn-sm btn-primary" th:href="@{'/admin/products/edit/' + ${p.productId}}">Sửa</a>
+                <a class="btn btn-sm btn-danger" th:href="@{'/admin/products/delete/' + ${p.productId}}" onclick="return confirm('Xóa sản phẩm này?')">Xóa</a>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+</section>
+
+
+
+</body>
+</html>

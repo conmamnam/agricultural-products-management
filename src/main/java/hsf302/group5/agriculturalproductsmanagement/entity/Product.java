@@ -19,10 +19,10 @@ public class Product {
     @Column(name = "product_id", updatable = false)
     private int productId;
 
-    @Column(name = "product_name", length = 150, nullable = false)
+    @Column(name = "product_name", length = 150, nullable = false, columnDefinition = "NVARCHAR(150)")
     private String productName;
 
-    @Column(length = 255)
+    @Column(length = 255, columnDefinition = "NVARCHAR(255)")
     private String description;
 
     @Column(nullable = false)
@@ -40,4 +40,13 @@ public class Product {
 
     @OneToMany(mappedBy = "product")
     private List<OrderDetail> orderDetails;
+
+    public Product(String productName, String description, double price, int stock, String imageUrl, Category category) {
+        this.productName = productName;
+        this.description = description;
+        this.price = price;
+        this.stock = stock;
+        this.imageUrl = imageUrl;
+        this.category = category;
+    }
 }

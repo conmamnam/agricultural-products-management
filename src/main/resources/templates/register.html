@@ -51,6 +51,7 @@
 
         <!-- Thông báo lỗi riêng (VD: Số điện thoại đã tồn tại) -->
         <div th:if="${phoneNumberExist != null}" class="text-danger mt-2" th:text="${phoneNumberExist}"></div>
+        <div th:if="${error != null}" class="text-danger mt-2" th:text="${error}"></div>
 
         <button type="submit">Đăng ký</button>
     </form>
