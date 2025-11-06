@@ -73,7 +73,7 @@ public class UserController {
         User user = userService.getUserByEmailAndPassword(email, password);
         if (user != null) {
 
-            if (user.getRole().getRoleName().equalsIgnoreCase("admin")) {
+            if (user.getRole().getRoleName().toLowerCase().equalsIgnoreCase("admin")) {
                 return "redirect:/admin/dashboard";
             }
             return "redirect:/";
