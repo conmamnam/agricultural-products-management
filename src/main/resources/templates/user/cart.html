@@ -113,6 +113,19 @@
         </div>
     </div>
 
+    <!-- Alert Messages -->
+    <div th:if="${errorMessage}" class="alert alert-danger alert-dismissible fade show" role="alert">
+        <i class="bi bi-exclamation-triangle-fill"></i>
+        <strong>Lỗi!</strong> <span th:text="${errorMessage}"></span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+    
+    <div th:if="${successMessage}" class="alert alert-success alert-dismissible fade show" role="alert">
+        <i class="bi bi-check-circle-fill"></i>
+        <strong>Thành công!</strong> <span th:text="${successMessage}"></span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+
     <!-- Cart Items -->
     <div class="cart-container" th:if="${!#lists.isEmpty(cart)}">
         <div class="cart-item" th:each="item : ${cart}">
@@ -139,21 +152,37 @@
 
                 <!-- Quantity -->
                 <div class="col-md-2 text-center">
-                    <form th:action="@{/cart/update}" method="post" style="display: inline;">
+                    <p class="text-muted mb-1">Số lượng</p>
+                    <form th:action="@{/cart/update}" method="post" th:id="'form-' + ${item.product.productId}">
                         <input type="hidden" name="productId" th:value="${item.product.productId}">
-                        <div class="input-group input-group-sm">
-                            <button class="btn btn-outline-secondary" type="button" 
-                                    onclick="this.nextElementSibling.stepDown(); this.form.submit();">
+                        <div class="d-flex justify-content-center align-items-center gap-2 mb-2">
+                            <!-- Nút giảm -->
+                            <button class="btn btn-outline-danger btn-sm" type="button" 
+                                    th:disabled="${item.quantity <= 1}"
+                                    th:onclick="'decreaseQuantity(' + ${item.product.productId} + ')'">
                                 <i class="bi bi-dash"></i>
                             </button>
-                            <input type="number" class="form-control quantity-input" name="quantity" 
-                                   th:value="${item.quantity}" min="1" max="100">
-                            <button class="btn btn-outline-secondary" type="button"
-                                    onclick="this.previousElementSibling.stepUp(); this.form.submit();">
+                            
+                            <!-- Input số lượng -->
+                            <input type="number" 
+                                   class="form-control form-control-sm text-center fw-bold" 
+                                   name="quantity" 
+                                   th:id="'qty-' + ${item.product.productId}"
+                                   th:value="${item.quantity}" 
+                                   min="1" 
+                                   th:max="${item.product.stock}"
+                                   style="width: 60px;"
+                                   onchange="this.form.submit();">
+                            
+                            <!-- Nút tăng -->
+                            <button class="btn btn-outline-success btn-sm" type="button"
+                                    th:disabled="${item.quantity >= item.product.stock}"
+                                    th:onclick="'increaseQuantity(' + ${item.product.productId} + ', ' + ${item.product.stock} + ')'">
                                 <i class="bi bi-plus"></i>
                             </button>
                         </div>
                     </form>
+                    <small class="text-muted" th:text="'Còn ' + ${item.product.stock} + ' sản phẩm'">Còn 10 sản phẩm</small>
                 </div>
 
                 <!-- Subtotal -->
@@ -206,6 +235,32 @@
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+<script>
+    // Hàm giảm số lượng
+    function decreaseQuantity(productId) {
+        const input = document.getElementById('qty-' + productId);
+        const currentValue = parseInt(input.value);
+        const minValue = parseInt(input.min);
+        
+        if (currentValue > minValue) {
+            input.value = currentValue - 1;
+            document.getElementById('form-' + productId).submit();
+        }
+    }
+    
+    // Hàm tăng số lượng
+    function increaseQuantity(productId, maxStock) {
+        const input = document.getElementById('qty-' + productId);
+        const currentValue = parseInt(input.value);
+        const maxValue = parseInt(input.max);
+        
+        if (currentValue < maxValue) {
+            input.value = currentValue + 1;
+            document.getElementById('form-' + productId).submit();
+        }
+    }
+</script>
 </body>
 </html>
 

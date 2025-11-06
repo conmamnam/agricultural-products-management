@@ -9,6 +9,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -44,6 +45,21 @@ public class CartController {
         model.addAttribute("cart", cart);
         model.addAttribute("total", total);
         model.addAttribute("account", account);
+        
+        // Hiển thị thông báo lỗi/thành công (nếu có)
+        String errorMessage = (String) session.getAttribute("errorMessage");
+        String successMessage = (String) session.getAttribute("successMessage");
+        
+        if (errorMessage != null) {
+            model.addAttribute("errorMessage", errorMessage);
+            session.removeAttribute("errorMessage");
+        }
+        
+        if (successMessage != null) {
+            model.addAttribute("successMessage", successMessage);
+            session.removeAttribute("successMessage");
+        }
+        
         return "user/cart";
     }
 
@@ -51,9 +67,16 @@ public class CartController {
     @PostMapping("/add")
     public String addToCart(@RequestParam("productId") int productId,
                            @RequestParam(value = "quantity", defaultValue = "1") int quantity,
-                           HttpSession session) {
+                           HttpSession session,
+                           Model model) {
         Product product = productService.getProductById(productId)
                 .orElseThrow(() -> new IllegalArgumentException("Không tìm thấy sản phẩm"));
+
+        // Kiểm tra số lượng không được <= 0
+        if (quantity <= 0) {
+            session.setAttribute("errorMessage", "Số lượng phải lớn hơn 0!");
+            return "redirect:/cart";
+        }
 
         List<CartItem> cart = getCart(session);
 
@@ -65,13 +88,31 @@ public class CartController {
 
         if (existingItem != null) {
             // Đã có → Tăng số lượng
-            existingItem.setQuantity(existingItem.getQuantity() + quantity);
+            int newQuantity = existingItem.getQuantity() + quantity;
+            
+            // Kiểm tra không vượt quá tồn kho
+            if (newQuantity > product.getStock()) {
+                session.setAttribute("errorMessage", 
+                    "Không thể thêm! Sản phẩm '" + product.getProductName() + 
+                    "' chỉ còn " + product.getStock() + " sản phẩm trong kho.");
+                return "redirect:/cart";
+            }
+            
+            existingItem.setQuantity(newQuantity);
         } else {
-            // Chưa có → Thêm mới
+            // Chưa có → Kiểm tra số lượng trước khi thêm
+            if (quantity > product.getStock()) {
+                session.setAttribute("errorMessage", 
+                    "Không thể thêm! Sản phẩm '" + product.getProductName() + 
+                    "' chỉ còn " + product.getStock() + " sản phẩm trong kho.");
+                return "redirect:/cart";
+            }
+            
             cart.add(new CartItem(product, quantity));
         }
 
         session.setAttribute("cart", cart);
+        session.setAttribute("successMessage", "Đã thêm sản phẩm vào giỏ hàng!");
         return "redirect:/cart";
     }
 
@@ -82,14 +123,31 @@ public class CartController {
                             HttpSession session) {
         List<CartItem> cart = getCart(session);
 
-        cart.stream()
+        CartItem cartItem = cart.stream()
                 .filter(item -> item.getProduct().getProductId() == productId)
                 .findFirst()
-                .ifPresent(item -> {
-                    if (quantity > 0) {
-                        item.setQuantity(quantity);
-                    }
-                });
+                .orElse(null);
+
+        if (cartItem != null) {
+            Product product = cartItem.getProduct();
+            
+            // Kiểm tra số lượng phải > 0
+            if (quantity <= 0) {
+                session.setAttribute("errorMessage", "Số lượng phải lớn hơn 0!");
+                return "redirect:/cart";
+            }
+            
+            // Kiểm tra không vượt quá tồn kho
+            if (quantity > product.getStock()) {
+                session.setAttribute("errorMessage", 
+                    "Sản phẩm '" + product.getProductName() + 
+                    "' chỉ còn " + product.getStock() + " sản phẩm trong kho. Không thể cập nhật!");
+                return "redirect:/cart";
+            }
+            
+            cartItem.setQuantity(quantity);
+            session.setAttribute("successMessage", "Đã cập nhật số lượng!");
+        }
 
         session.setAttribute("cart", cart);
         return "redirect:/cart";
@@ -167,32 +225,57 @@ public class CartController {
             orderDetailService.saveOrderDetail(orderDetail);
         }
 
-        // Xóa giỏ hàng khỏi session
-        session.removeAttribute("cart");
+            // Lưu transaction vào session (lịch sử giao dịch)
+            TransactionHistory transaction = new TransactionHistory(
+                    savedOrder.getOrderId(),
+                    totalPrice,
+                    paymentMethod,
+                    savedOrder.getOrderStatus(),
+                    savedOrder.getPaymentStatus(),
+                    LocalDateTime.now()
+            );
+            addTransactionToHistory(session, transaction);
 
-        // ✅ Nếu chọn VNPay → Redirect đến trang thanh toán VNPay
-        if ("VNPay".equals(paymentMethod)) {
-            // Lưu orderId vào session để xử lý sau khi thanh toán
-            session.setAttribute("orderId", savedOrder.getOrderId());
-            return "redirect:/payment/create?orderId=" + savedOrder.getOrderId() + "&amount=" + (long)totalPrice;
-        }
+            // Xóa giỏ hàng khỏi session
+            session.removeAttribute("cart");
 
-        // Nếu không phải VNPay → Redirect đến trang chi tiết đơn hàng
-        return "redirect:/order/detail/" + savedOrder.getOrderId();
+            // Nếu chọn VNPay → Redirect đến trang thanh toán VNPay
+            if ("VNPay".equals(paymentMethod)) {
+                // Lưu orderId vào session để xử lý sau khi thanh toán
+                session.setAttribute("orderId", savedOrder.getOrderId());
+                return "redirect:/payment/create?orderId=" + savedOrder.getOrderId() + "&amount=" + (long)totalPrice;
+            }
+
+            // Nếu không phải VNPay → Redirect đến trang chi tiết đơn hàng
+            return "redirect:/order/detail/" + savedOrder.getOrderId();
     }
 
-    /**
-     * Helper method: Lấy giỏ hàng từ session
-     * Nếu chưa có → Tạo mới
-     */
-    @SuppressWarnings("unchecked")
-    private List<CartItem> getCart(HttpSession session) {
-        List<CartItem> cart = (List<CartItem>) session.getAttribute("cart");
-        if (cart == null) {
-            cart = new ArrayList<>();
-            session.setAttribute("cart", cart);
+        /**
+         * Helper method: Lấy giỏ hàng từ session
+         * Nếu chưa có → Tạo mới
+         */
+        @SuppressWarnings("unchecked")
+        private List<CartItem> getCart(HttpSession session) {
+            List<CartItem> cart = (List<CartItem>) session.getAttribute("cart");
+            if (cart == null) {
+                cart = new ArrayList<>();
+                session.setAttribute("cart", cart);
+            }
+            return cart;
         }
-        return cart;
+
+        /**
+         * Helper method: Thêm transaction vào lịch sử (session)
+         */
+        @SuppressWarnings("unchecked")
+        private void addTransactionToHistory(HttpSession session, TransactionHistory transaction) {
+            List<TransactionHistory> history = (List<TransactionHistory>) session.getAttribute("transactionHistory");
+            if (history == null) {
+                history = new ArrayList<>();
+            }
+            // Thêm transaction mới vào đầu list (giao dịch mới nhất hiển thị đầu tiên)
+            history.add(0, transaction);
+            session.setAttribute("transactionHistory", history);
+        }
     }
-}
 
