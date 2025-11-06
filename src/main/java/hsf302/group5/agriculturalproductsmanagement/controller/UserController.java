@@ -4,6 +4,7 @@ import hsf302.group5.agriculturalproductsmanagement.entity.Role;
 import hsf302.group5.agriculturalproductsmanagement.entity.User;
 import hsf302.group5.agriculturalproductsmanagement.service.RoleServiceImpl;
 import hsf302.group5.agriculturalproductsmanagement.service.UserServiceImpl;
+import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -69,16 +70,25 @@ public class UserController {
     }
 
     @PostMapping("/login")
-    public String loginSubmit(@RequestParam String email, @RequestParam String password, Model model) {
+    public String login(@RequestParam String email,
+                        @RequestParam String password,
+                        HttpSession session,
+                        Model model) {
         User user = userService.getUserByEmailAndPassword(email, password);
-        if (user != null) {
 
-            if (user.getRole().getRoleName().toLowerCase().equalsIgnoreCase("admin")) {
+        if (user != null) {
+            // Lưu user entity trực tiếp vào session
+            session.setAttribute("account", user);
+
+            // Nếu là admin chuyển về trang dashboard
+            if (user.getRole().getRoleName().equalsIgnoreCase("admin")) {
                 return "redirect:/admin/dashboard";
             }
-            return "redirect:/";
+
+            // Redirect về trang chủ
+            return "redirect:/home";
         } else {
-            model.addAttribute("error", "Invalid email or password");
+            model.addAttribute("error", "Email hoặc mật khẩu không đúng");
             return "login";
         }
     }
