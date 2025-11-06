@@ -45,7 +45,7 @@ public class User {
     @Column(nullable = false)
     private boolean status = true;
 
-    // ✅ Sửa thành EAGER để tránh lỗi LazyInitializationException
+    // Sửa thành EAGER để tránh lỗi LazyInitializationException
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "role_id", nullable = false)
     private Role role;

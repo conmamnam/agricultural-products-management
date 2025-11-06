@@ -31,7 +31,7 @@ public class UserServiceImpl implements UserService {
         return userRepository.findByEmailAndPassword(email, password);
     }
 
-    // ✅ Cập nhật hồ sơ (chỉ sửa 3 trường được phép)
+    // Cập nhật hồ sơ (chỉ sửa 3 trường được phép)
     @Override
     @Transactional
     public void updateProfile(User user) {

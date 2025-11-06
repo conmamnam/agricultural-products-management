@@ -30,7 +30,7 @@ public class AuthController {
         User user = userService.getUserByEmailAndPassword(email, password);
         
         if (user != null) {
-            // ✅ Lưu user entity trực tiếp vào session
+            // Lưu user entity trực tiếp vào session
             session.setAttribute("account", user);
             
             // Redirect về trang chủ

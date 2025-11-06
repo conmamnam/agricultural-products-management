@@ -36,7 +36,7 @@ public class PaymentController {
         return "redirect:" + paymentUrl;
     }
 
-    // ✅ MỚI THÊM - Tạo thanh toán từ Cart
+    // Tạo thanh toán từ Cart
     @GetMapping("/payment/create")
     public String createPaymentFromCart(
             @RequestParam("orderId") int orderId,
