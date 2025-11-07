@@ -44,7 +44,7 @@ public class DataInitializer implements CommandLineRunner {
         roleRepository.save(userRole);
 
         // Admin account
-        User admin =  new User("Toi la Admin", "0991111111", "Street 000", "admin@gmail.com", "12345678");
+        User admin =  new User("Vua trái cây", "0991111111", "Street 000", "admin@gmail.com", "12345678");
         admin.setRole(adminRole);
         userRepository.save(admin);
 

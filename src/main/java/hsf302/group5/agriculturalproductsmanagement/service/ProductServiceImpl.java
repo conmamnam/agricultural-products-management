@@ -2,6 +2,9 @@ package hsf302.group5.agriculturalproductsmanagement.service;
 
 import hsf302.group5.agriculturalproductsmanagement.entity.Product;
 import hsf302.group5.agriculturalproductsmanagement.repository.ProductRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -19,6 +22,12 @@ public class ProductServiceImpl implements ProductService {
     @Override
     public List<Product> getAllProducts() {
         return productRepository.findAll();
+    }
+
+    @Override
+    public Page<Product> getPaginatedProducts(int pageNo, int pageSize) {
+        Pageable pageable = PageRequest.of(pageNo - 1, pageSize);
+        return productRepository.findAll(pageable);
     }
 
     @Override
@@ -44,5 +53,11 @@ public class ProductServiceImpl implements ProductService {
     @Override
     public List<Product> searchProducts(String keyword) {
         return productRepository.findByProductNameContainingIgnoreCase(keyword);
+    }
+
+    @Override
+    public Page<Product> searchPaginatedProducts(String keyword, int pageNo, int pageSize) {
+        Pageable pageable = PageRequest.of(pageNo - 1, pageSize);
+        return productRepository.findByProductNameContainingIgnoreCase(keyword, pageable);
     }
 }

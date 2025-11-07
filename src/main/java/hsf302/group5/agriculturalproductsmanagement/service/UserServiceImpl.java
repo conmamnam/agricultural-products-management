@@ -3,6 +3,9 @@ package hsf302.group5.agriculturalproductsmanagement.service;
 import hsf302.group5.agriculturalproductsmanagement.entity.User;
 import hsf302.group5.agriculturalproductsmanagement.repository.UserRepository;
 import jakarta.transaction.Transactional;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -53,7 +56,19 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public List<User> getAll() {
+    public List<User> getAllUser() {
         return userRepository.findAll();
+    }
+
+    @Override
+    public Page<User> getPaginatedUsers(int pageNo, int pageSize) {
+        Pageable pageable = PageRequest.of(pageNo - 1, pageSize);
+        return userRepository.findAll(pageable);
+    }
+
+    @Override
+    public Page<User> searchPaginatedUsersByFullName(String fullName, int pageNo, int pageSize) {
+        Pageable pageable = PageRequest.of(pageNo - 1, pageSize);
+        return userRepository.findUsersByFullNameContainingIgnoreCase(fullName, pageable);
     }
 }
