@@ -94,7 +94,7 @@ public class UserController {
     }
 
     // [POST/GET] /logout - Đăng xuất
-    @PostMapping("/logout")
+    @GetMapping("/logout")
     public String logoutPost(HttpSession session) {
         session.invalidate();
         return "redirect:/";

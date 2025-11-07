@@ -39,6 +39,7 @@ public class User {
     @Column(length = 100, nullable = false, unique = true)
     private String email;
 
+    @Size(min = 6, max = 255, message = "Mật khẩu phải có độ dài từ 8 ký tự trở lên")
     @Column(length = 255, nullable = false)
     private String password;
 
