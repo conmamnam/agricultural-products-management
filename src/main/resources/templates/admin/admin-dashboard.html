@@ -92,7 +92,7 @@
     </style>
 </head>
 <body>
-<header th:replace="~{admin/layout :: admin-header(user=${user})}"></header>
+<header th:replace="~{admin/layout :: admin-header(user=${adminInfo})}"></header>
 <div class="container-wrapper">
     <nav th:replace="~{admin/layout :: sidebar(currentPage='dashboard')}"></nav>
 
@@ -102,41 +102,17 @@
         <div class="stats-grid">
             <div class="stat-card">
                 <h3>Tổng người dùng</h3>
-                <p th:text="${userId}" class="blue"></p>
+                <p th:text="${totalUsers}" class="blue"></p>
             </div>
             <div class="stat-card">
                 <h3>Tổng đơn hàng</h3>
-                <p th:text="${orderId}" class="green">567</p>
+                <p th:text="${totalOrders}" class="green">567</p>
             </div>
             <div class="stat-card">
                 <h3>Tổng sản phẩm</h3>
-                <p th:text="${productId}" class="orange"></p>
+                <p th:text="${totalProducts}" class="orange"></p>
             </div>
         </div>
-
-        <!-- 🔍 Bộ lọc theo thời gian -->
-        <!-- 🔍 Bộ lọc theo tháng và năm -->
-        <form method="get" th:action="@{/admin/dashboard}" class="filter-form">
-            <label for="month">Chọn tháng:</label>
-            <select id="month" name="month">
-                <option value="">-- Tháng --</option>
-                <option th:each="m : ${#numbers.sequence(1,12)}"
-                        th:value="${m}"
-                        th:text="'Tháng ' + ${m}"
-                        th:selected="${month} == ${m}"></option>
-            </select>
-
-            <label for="year">Chọn năm:</label>
-            <select id="year" name="year">
-                <option value="">-- Năm --</option>
-                <option th:each="y : ${years}"
-                        th:value="${y}"
-                        th:text="${y}"
-                        th:selected="${year} == ${y}"></option>
-            </select>
-
-            <button type="submit">Lọc</button>
-        </form>
 
 
         <!-- 📈 Biểu đồ đơn hàng theo trạng thái -->
@@ -145,14 +121,14 @@
             <canvas id="orderStatusChart"></canvas>
         </div>
 
-        <!-- 🧾 Danh sách người dùng mới đăng ký -->
+        <!-- 🧾 Danh sách người dùng đã đăng ký -->
         <div class="card">
-            <h2>Người dùng mới đăng ký</h2>
+            <h2>Người dùng đã đăng ký</h2>
             <table>
                 <thead>
                 <tr>
                     <th>ID</th>
-                    <th>Tên đăng nhập</th>
+                    <th>Email</th>
                     <th>Họ tên</th>
                     <th>Địa chỉ</th>
                     <th>Trạng thái</th>
@@ -163,12 +139,14 @@
                 <tbody>
                 <tr th:each="user : ${recentUsers}">
                     <td th:text="${user.userId}"></td>
-                    <td th:text="${user.userName}"></td>
-                    <td th:text="${user.userFullName}"></td>
+                    <td th:text="${user.email}"></td>
+                    <td th:text="${user.fullName}"></td>
                     <td th:text="${user.address}"></td>
-                    <td th:text="${user.status}"></td>
+                    <td th:text="${user.status ? 'Đang hoạt động' : 'Ngưng hoạt động'}"
+                        th:style="${user.status} ? 'color: green;' : 'color: yellow;'">
+                    </td>
                     <td th:text="${user.phoneNumber}"></td>
-                    <td th:text="${user.role.name}"></td>
+                    <td th:text="${user.role.roleId == 2 ? 'Khách hàng' : 'Quản trị viên'}"></td>
                 </tr>
                 </tbody>
             </table>
