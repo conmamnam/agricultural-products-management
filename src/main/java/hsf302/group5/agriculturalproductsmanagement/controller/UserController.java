@@ -93,13 +93,6 @@ public class UserController {
         }
     }
 
-    // [POST/GET] /logout - Đăng xuất
-    @GetMapping("/logout")
-    public String logoutPost(HttpSession session) {
-        session.invalidate();
-        return "redirect:/";
-    }
-
     @GetMapping("/logout")
     public String logoutGet(HttpSession session) {
         session.invalidate();
