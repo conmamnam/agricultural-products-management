@@ -9,7 +9,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.ModelAndView;
 
 import java.util.List;
 import java.util.Optional;
@@ -98,12 +97,26 @@ public class ProductController {
     // 8. [GET] /products/{id} (User)
     @GetMapping("/products/{id}")
     public String showProductDetail(@PathVariable("id") int id, Model model) {
-        Optional<Product> product = productService.getProductById(id);
-        if (product.isPresent()) {
-            model.addAttribute("product", product.get());
-            return "product_detail"; // View: product_detail.html
+        Optional<Product> productOpt = productService.getProductById(id);
+        if (productOpt.isEmpty()) {
+            return "redirect:/product/all-product";
         }
-        return "redirect:/product/all-product";
+
+        Product product = productOpt.get();
+        model.addAttribute("product", product);
+        List<Product> relatedProducts = productService.getProductsByCategoryId(product.getCategory().getCategoryId())
+                .stream()
+                .filter(p -> p.getProductId() != product.getProductId())
+                .limit(4)
+                .toList();
+        model.addAttribute("relatedProducts", relatedProducts);
+        return "user/product-detail"; // View: user/product-detail.html
+    }
+
+    // 8b. [GET] /product/detail/{id} (User - legacy url)
+    @GetMapping("/product/detail/{id}")
+    public String showProductDetailLegacy(@PathVariable("id") int id) {
+        return "redirect:/products/" + id;
     }
 
     // 9. [GET] /product/all-product (User)

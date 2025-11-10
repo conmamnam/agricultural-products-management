@@ -4,12 +4,124 @@
     <meta charset="UTF-8">
     <title>Thêm sản phẩm</title>
     <link rel="icon" type="image/png" href="/image/logo-web.png">
-    <link href="./css/product.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
     <style>
+        main {
+            background: transparent;
+        }
+        .page-header {
+            margin-bottom: 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 16px;
+        }
+        .page-header h2 {
+            margin: 0;
+            color: #2e7d32;
+            font-size: 1.8rem;
+            font-weight: 600;
+        }
+        .page-header p {
+            margin: 4px 0 0 0;
+            color: #5f6b5f;
+            font-size: 0.95rem;
+        }
+        .form-card {
+            background: white;
+            border-radius: 16px;
+            padding: 28px 32px;
+            box-shadow: 0 10px 30px rgba(46, 125, 50, 0.15);
+        }
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 24px;
+        }
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+        .form-group label {
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #2e7d32;
+            font-size: 0.95rem;
+        }
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            border: 1px solid #cfd8dc;
+            border-radius: 10px;
+            padding: 12px 14px;
+            font-size: 1rem;
+            transition: border 0.2s, box-shadow 0.2s;
+            font-family: inherit;
+            background: #fdfdfd;
+        }
+        .form-group textarea {
+            min-height: 120px;
+            resize: vertical;
+        }
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #2e7d32;
+            box-shadow: 0 0 0 3px rgba(46, 125, 50, 0.15);
+        }
         .error {
-            color: red;
-            font-size: 0.9em;
-            margin-top: 4px;
+            color: #c62828;
+            font-size: 0.85rem;
+            margin-top: 6px;
+        }
+        .form-actions {
+            display: flex;
+            gap: 16px;
+            justify-content: flex-end;
+            margin-top: 30px;
+        }
+        .btn {
+            padding: 12px 26px;
+            border-radius: 10px;
+            border: none;
+            font-weight: 600;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .btn-primary {
+            background: linear-gradient(135deg, #2e7d32, #1b5e20);
+            color: white;
+        }
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 18px rgba(46, 125, 50, 0.25);
+        }
+        .btn-outline {
+            background: white;
+            color: #2e7d32;
+            border: 1px solid #2e7d32;
+        }
+        .btn-outline:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(46, 125, 50, 0.15);
+        }
+        @media (max-width: 768px) {
+            .form-card {
+                padding: 24px;
+            }
+            .form-actions {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            .btn {
+                justify-content: center;
+            }
         }
     </style>
 </head>
@@ -20,61 +132,72 @@
     <nav th:replace="~{admin/layout :: sidebar(currentPage='products')}"></nav>
 
     <main>
-        <div class="card">
-            <h2>Thêm sản phẩm mới</h2>
+        <div class="page-header">
+            <div>
+                <h2>Thêm sản phẩm mới</h2>
+                <p>Điền đầy đủ thông tin để tạo sản phẩm hiển thị cho người dùng.</p>
+            </div>
+            <a th:href="@{/admin/products}" class="btn btn-outline">
+                <i class="bi bi-arrow-left"></i>
+                Quay lại
+            </a>
+        </div>
+
+        <div class="form-card">
             <form th:action="@{/admin/products/add}" th:object="${product}" method="post">
-                <table class="form-table">
-                    <tr>
-                        <td><label>Tên sản phẩm:</label></td>
-                        <td>
-                            <input type="text" th:field="*{productName}" placeholder="Tên sản phẩm"/>
-                            <div class="error" th:if="${#fields.hasErrors('productName')}" th:errors="*{productName}"></div>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td><label>Giá:</label></td>
-                        <td>
-                            <input type="number" step="0.01" th:field="*{price}" placeholder="Giá sản phẩm"/>
-                            <div class="error" th:if="${#fields.hasErrors('price')}" th:errors="*{price}"></div>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td><label>Số lượng tồn:</label></td>
-                        <td>
-                            <input type="number" th:field="*{stock}" placeholder="Số lượng tồn"/>
-                            <div class="error" th:if="${#fields.hasErrors('stock')}" th:errors="*{stock}"></div>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td><label>Mô tả:</label></td>
-                        <td>
-                            <input type="text" th:field="*{description}" placeholder="Mô tả sản phẩm"/>
-                            <div class="error" th:if="${#fields.hasErrors('description')}" th:errors="*{description}"></div>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td><label>Ảnh:</label></td>
-                        <td>
-                            <input type="text" th:field="*{imageUrl}" placeholder="Link ảnh"/>
-                            <div class="error" th:if="${#fields.hasErrors('imageUrl')}" th:errors="*{imageUrl}"></div>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td><label>Danh mục:</label></td>
-                        <td>
-                            <select th:field="*{category.categoryId}" required>
-                                <option th:each="category : ${categories}"
-                                        th:value="${category.categoryId}"
-                                        th:text="${category.categoryName}">
-                                </option>
-                            </select>
-                        </td>
-                    </tr>
-                </table>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="productName">Tên sản phẩm</label>
+                        <input id="productName" type="text" th:field="*{productName}" placeholder="Ví dụ: Táo Mỹ, Nho đỏ..."/>
+                        <div class="error" th:if="${#fields.hasErrors('productName')}" th:errors="*{productName}"></div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="price">Giá bán (VNĐ)</label>
+                        <input id="price" type="number" step="0.01" th:field="*{price}" placeholder="Nhập giá bán"/>
+                        <div class="error" th:if="${#fields.hasErrors('price')}" th:errors="*{price}"></div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="stock">Tồn kho</label>
+                        <input id="stock" type="number" th:field="*{stock}" placeholder="Số lượng hiện có"/>
+                        <div class="error" th:if="${#fields.hasErrors('stock')}" th:errors="*{stock}"></div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="imageUrl">Đường dẫn ảnh</label>
+                        <input id="imageUrl" type="text" th:field="*{imageUrl}" placeholder="https://example.com/image.jpg"/>
+                        <div class="error" th:if="${#fields.hasErrors('imageUrl')}" th:errors="*{imageUrl}"></div>
+                    </div>
+
+                    <div class="form-group" style="grid-column: span 2; min-height: 100%;">
+                        <label for="description">Mô tả sản phẩm</label>
+                        <textarea id="description" th:field="*{description}" placeholder="Mô tả ngắn gọn về chất lượng, nguồn gốc..."></textarea>
+                        <div class="error" th:if="${#fields.hasErrors('description')}" th:errors="*{description}"></div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="category">Danh mục</label>
+                        <select id="category" th:field="*{category.categoryId}" required>
+                            <option value="0" th:selected="${product.category == null or product.category.categoryId == 0}" hidden>Chọn danh mục</option>
+                            <option th:each="category : ${categories}"
+                                    th:value="${category.categoryId}"
+                                    th:text="${category.categoryName}">
+                            </option>
+                        </select>
+                        <div class="error" th:if="${#fields.hasErrors('category.categoryId')}" th:errors="*{category.categoryId}"></div>
+                    </div>
+                </div>
 
                 <div class="form-actions">
-                    <button type="submit">💾 Lưu</button>
-                    <a th:href="@{/admin/products}">❌ Hủy</a>
+                    <a th:href="@{/admin/products}" class="btn btn-outline">
+                        <i class="bi bi-x-lg"></i>
+                        Hủy
+                    </a>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="bi bi-save"></i>
+                        Lưu sản phẩm
+                    </button>
                 </div>
             </form>
         </div>

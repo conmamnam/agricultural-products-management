@@ -132,12 +132,16 @@
             <div class="row align-items-center">
                 <!-- Product Image -->
                 <div class="col-md-2 text-center">
-                    <img th:src="${item.product.imageUrl}" class="product-img" alt="Product">
+                    <a th:href="@{'/products/' + ${item.product.productId}}">
+                        <img th:src="${item.product.imageUrl}" class="product-img" alt="Product">
+                    </a>
                 </div>
 
                 <!-- Product Info -->
                 <div class="col-md-4">
-                    <h5 class="text-success fw-bold mb-1" th:text="${item.product.productName}">Táo Mỹ</h5>
+                    <h5 class="text-success fw-bold mb-1">
+                        <a th:href="@{'/products/' + ${item.product.productId}}" class="text-decoration-none text-success" th:text="${item.product.productName}">Táo Mỹ</a>
+                    </h5>
                     <p class="text-muted mb-0" th:text="${item.product.description}">Ngon, giòn, tươi</p>
                     <p class="mb-0 mt-2">
                         <span class="badge bg-success" th:text="${item.product.category.categoryName}">Trái cây</span>

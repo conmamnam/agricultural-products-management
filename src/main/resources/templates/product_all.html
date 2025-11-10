@@ -124,9 +124,13 @@
             <div class="product-card position-relative">
                 <span class="stock-badge" th:text="'Còn ' + ${product.stock}">Còn 10</span>
                 
-                <img th:src="${product.imageUrl}" class="product-img" alt="Product Image">
+                <a th:href="@{'/products/' + ${product.productId}}" class="text-decoration-none">
+                    <img th:src="${product.imageUrl}" class="product-img" alt="Product Image">
+                </a>
                 
-                <h5 class="product-name" th:text="${product.productName}">Táo Mỹ</h5>
+                <h5 class="product-name">
+                    <a th:href="@{'/products/' + ${product.productId}}" class="text-decoration-none text-success" th:text="${product.productName}">Táo Mỹ</a>
+                </h5>
                 
                 <p class="product-desc" th:text="${product.description}">Ngon, giòn, tươi</p>
                 
@@ -147,9 +151,12 @@
                 <!-- Form thêm vào giỏ -->
                 <form th:action="@{/cart/add}" method="post">
                     <input type="hidden" name="productId" th:value="${product.productId}">
-                    <div class="input-group mb-2">
+                <div class="input-group mb-2">
                         <input type="number" name="quantity" value="1" min="1" th:max="${product.stock}" class="form-control" placeholder="Số lượng">
                     </div>
+                <a th:href="@{'/products/' + ${product.productId}}" class="btn btn-outline-success w-100 mb-2">
+                    <i class="bi bi-eye"></i> Xem chi tiết
+                </a>
                     <button type="submit" class="btn btn-add-cart" th:disabled="${product.stock == 0}">
                         <i class="bi bi-cart-plus"></i> 
                         <span th:if="${product.stock > 0}">Thêm vào giỏ</span>

@@ -78,7 +78,9 @@
     <div class="product-item" th:each="detail : ${orderDetails}">
         <div class="row align-items-center">
             <div class="col-md-6">
-                <strong th:text="${detail.product.productName}">Táo Mỹ</strong>
+                <strong>
+                    <a th:href="@{'/products/' + ${detail.product.productId}}" class="text-decoration-none text-success" th:text="${detail.product.productName}">Táo Mỹ</a>
+                </strong>
                 <p class="text-muted mb-0 small" th:text="${detail.product.description}">Ngon, giòn, tươi</p>
             </div>
             <div class="col-md-2 text-center">

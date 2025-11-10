@@ -1,5 +1,6 @@
 package hsf302.group5.agriculturalproductsmanagement.controller;
 
+import hsf302.group5.agriculturalproductsmanagement.entity.Category;
 import hsf302.group5.agriculturalproductsmanagement.entity.User;
 import hsf302.group5.agriculturalproductsmanagement.entity.Product;
 import hsf302.group5.agriculturalproductsmanagement.service.CategoryService;
@@ -172,7 +173,9 @@ public class AdminController {
         }
 
         model.addAttribute("adminInfo", adminInfo);
-        model.addAttribute("product", new Product());
+        Product product = new Product();
+        product.setCategory(new Category());
+        model.addAttribute("product", product);
         model.addAttribute("categories", categoryService.getAllCategories());
 
         return "admin/product/create";
@@ -190,7 +193,13 @@ public class AdminController {
             return "redirect:/admin";
         }
 
-        if (bindingResult.hasErrors()) {
+        if (bindingResult.hasErrors() || product.getCategory() == null || product.getCategory().getCategoryId() == 0) {
+            if (product.getCategory() == null) {
+                product.setCategory(new Category());
+            }
+            if (product.getCategory().getCategoryId() == 0) {
+                bindingResult.rejectValue("category.categoryId", "category.invalid", "Vui lòng chọn danh mục hợp lệ");
+            }
             model.addAttribute("categories", categoryService.getAllCategories());
             return "admin/product/create";
         }
