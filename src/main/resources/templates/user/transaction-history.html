@@ -126,8 +126,8 @@
     </div>
 
     <!-- Transaction List -->
-    <div class="history-container" th:if="${!#lists.isEmpty(history)}">
-        <div class="transaction-item" th:each="transaction : ${history}">
+    <div class="history-container" th:if="${!#lists.isEmpty(transactions)}">
+        <div class="transaction-item" th:each="transaction : ${transactions}">
             <div class="row align-items-center">
                 <div class="col-md-4">
                     <p class="mb-1 text-muted small">Mã đơn hàng</p>
@@ -161,7 +161,7 @@
     </div>
 
     <!-- Empty State -->
-    <div class="history-container" th:if="${#lists.isEmpty(history)}">
+    <div class="history-container" th:if="${#lists.isEmpty(transactions)}">
         <div class="empty-history">
             <i class="bi bi-clock-history"></i>
             <h3 class="text-muted">Chưa có giao dịch nào</h3>

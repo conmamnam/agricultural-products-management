@@ -1,9 +1,13 @@
 package hsf302.group5.agriculturalproductsmanagement.controller;
 
 import hsf302.group5.agriculturalproductsmanagement.entity.Order;
+import hsf302.group5.agriculturalproductsmanagement.entity.OrderDetail;
+import hsf302.group5.agriculturalproductsmanagement.entity.Product;
 import hsf302.group5.agriculturalproductsmanagement.entity.TransactionHistory;
 import hsf302.group5.agriculturalproductsmanagement.service.OrderService;
 import hsf302.group5.agriculturalproductsmanagement.service.PaymentService;
+import hsf302.group5.agriculturalproductsmanagement.service.OrderDetailService;
+import hsf302.group5.agriculturalproductsmanagement.service.ProductService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.stereotype.Controller;
@@ -12,19 +16,26 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.List;
 
 @Controller
 public class PaymentController {
 
     private final PaymentService paymentService;
     private final OrderService orderService;
+    private final OrderDetailService orderDetailService;
+    private final ProductService productService;
 
-    public PaymentController(PaymentService paymentService, OrderService orderService) {
+    public PaymentController(PaymentService paymentService,
+                             OrderService orderService,
+                             OrderDetailService orderDetailService,
+                             ProductService productService) {
         this.paymentService = paymentService;
         this.orderService = orderService;
+        this.orderDetailService = orderDetailService;
+        this.productService = productService;
     }
 
     // 1. [POST] /payment/create
@@ -71,6 +82,19 @@ public class PaymentController {
                 order.setOrderStatus("Confirmed");
                 order.setPaymentStatus("Paid");
                 orderService.createOrder(order); // Update order
+
+                // Giảm số lượng tồn kho của từng sản phẩm sau khi thanh toán thành công
+                List<OrderDetail> orderDetails = orderDetailService.getOrderDetailsByOrderId(orderId);
+                for (OrderDetail orderDetail : orderDetails) {
+                    Product product = orderDetail.getProduct();
+                    if (product != null) {
+                        int currentStock = product.getStock();
+                        int quantityPurchased = orderDetail.getQuantity();
+                        int updatedStock = Math.max(0, currentStock - quantityPurchased);
+                        product.setStock(updatedStock);
+                        productService.saveProduct(product);
+                    }
+                }
                 
                 // Cập nhật transaction history trong session
                 updateTransactionInHistory(session, orderId, "Confirmed", "Paid");
