@@ -72,10 +72,7 @@ public class PaymentController {
             // Cập nhật Order trong database
             Optional<Order> orderOpt = orderService.getOrderById(orderId);
             if (orderOpt.isPresent()) {
-                Order order = orderOpt.get();
-                order.setOrderStatus("Confirmed");
-                order.setPaymentStatus("Paid");
-                orderService.createOrder(order); // Update order
+                orderService.updateOrderStatus(orderId, "Confirmed", "Paid");
 
                 // Giảm số lượng tồn kho của từng sản phẩm sau khi thanh toán thành công
                 List<OrderDetail> orderDetails = orderDetailService.getOrderDetailsByOrderId(orderId);

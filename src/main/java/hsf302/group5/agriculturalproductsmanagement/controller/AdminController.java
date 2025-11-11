@@ -115,8 +115,7 @@ public class AdminController {
     public String updateOrderStatus(@RequestParam("id") int id,
                                     @RequestParam("status") String status) {
         orderService.getOrderById(id).ifPresent(order -> {
-            order.setOrderStatus(status); // tên trường status trong entity
-            orderService.createOrder(order); // lưu lại
+            orderService.updateOrderStatus(order.getOrderId(), status, order.getPaymentStatus());
         });
         return "redirect:/admin/orders";
     }
