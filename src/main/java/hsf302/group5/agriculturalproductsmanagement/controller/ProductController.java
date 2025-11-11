@@ -10,8 +10,10 @@ import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-import java.util.Optional;
+import java.text.Normalizer;
+import java.util.*;
+import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 @Controller
 public class ProductController {
@@ -130,9 +132,54 @@ public class ProductController {
     // 10. [POST] /product/search (User)
     @PostMapping("/product/search")
     public String searchProducts(@RequestParam("keyword") String keyword, Model model) {
+        String trimmedKeyword = keyword != null ? keyword.trim() : "";
+        if (trimmedKeyword.isEmpty()) {
+            return "redirect:/product/all-product";
+        }
+
         List<Product> products = productService.searchProducts(keyword);
         model.addAttribute("products", products);
         model.addAttribute("keyword", keyword);
-        return "product_search_results"; // View: product_search_results.html
+        return "product_all"; // Reuse general product list view
+    }
+
+    // 11. [GET] /api/products/suggest (User - ajax)
+    @GetMapping("/api/products/suggest")
+    @ResponseBody
+    public List<Map<String, Object>> suggestProducts(@RequestParam("keyword") String keyword) {
+        if (keyword == null) {
+            return Collections.emptyList();
+        }
+
+        String trimmedKeyword = keyword.trim();
+        if (trimmedKeyword.isEmpty()) {
+            return Collections.emptyList();
+        }
+
+        String normalizedKeyword = normalize(trimmedKeyword);
+        if (normalizedKeyword.isEmpty()) {
+            return Collections.emptyList();
+        }
+
+        return productService.getAllProducts()
+                .stream()
+                .filter(product -> {
+                    String normalizedName = normalize(product.getProductName());
+                    return normalizedName.contains(normalizedKeyword);
+                })
+                .limit(8)
+                .map(product -> {
+                    Map<String, Object> suggestion = new HashMap<>();
+                    suggestion.put("id", product.getProductId());
+                    suggestion.put("name", product.getProductName());
+                    suggestion.put("imageUrl", product.getImageUrl());
+                    return suggestion;
+                })
+                .collect(Collectors.toList());
+    }
+
+    private String normalize(String input) {
+        String normalized = Normalizer.normalize(input.toLowerCase(Locale.ROOT).trim(), Normalizer.Form.NFD);
+        return Pattern.compile("\\p{M}+").matcher(normalized).replaceAll("");
     }
 }

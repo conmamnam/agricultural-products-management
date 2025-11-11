@@ -15,6 +15,7 @@
             justify-content: space-between;
             align-items: center;
             gap: 16px;
+            flex-wrap: wrap;
         }
         .page-header h2 {
             margin: 0;
@@ -27,24 +28,34 @@
             color: #5f6b5f;
             font-size: 0.95rem;
         }
+        .form-wrapper {
+            max-width: 960px;
+            margin: 0 auto;
+        }
         .form-card {
             background: white;
             border-radius: 16px;
             padding: 28px 32px;
-            box-shadow: 0 10px 30px rgba(46, 125, 50, 0.15);
+            box-shadow: 0 18px 40px rgba(46, 125, 50, 0.2);
+            border: 1px solid rgba(46, 125, 50, 0.12);
         }
-        .form-grid {
+        form {
+            display: flex;
+            flex-direction: column;
+            gap: 28px;
+        }
+        .form-row {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-            gap: 24px;
+            gap: 28px;
         }
         .form-group {
             display: flex;
             flex-direction: column;
+            gap: 10px;
         }
         .form-group label {
             font-weight: 600;
-            margin-bottom: 8px;
             color: #2e7d32;
             font-size: 0.95rem;
         }
@@ -53,11 +64,12 @@
         .form-group textarea {
             border: 1px solid #cfd8dc;
             border-radius: 10px;
-            padding: 12px 14px;
+            padding: 13px 15px;
             font-size: 1rem;
             transition: border 0.2s, box-shadow 0.2s;
             font-family: inherit;
             background: #fdfdfd;
+            width: 100%;
         }
         .form-group textarea {
             min-height: 120px;
@@ -70,10 +82,14 @@
             border-color: #2e7d32;
             box-shadow: 0 0 0 3px rgba(46, 125, 50, 0.15);
         }
+        .helper-text {
+            font-size: 0.85rem;
+            color: #6c757d;
+            display: block;
+        }
         .error {
             color: #c62828;
             font-size: 0.85rem;
-            margin-top: 6px;
         }
         .form-actions {
             display: flex;
@@ -97,15 +113,17 @@
         .btn-primary {
             background: linear-gradient(135deg, #2e7d32, #1b5e20);
             color: white;
+            box-shadow: 0 12px 24px rgba(46, 125, 50, 0.25);
         }
         .btn-primary:hover {
             transform: translateY(-2px);
-            box-shadow: 0 8px 18px rgba(46, 125, 50, 0.25);
+            box-shadow: 0 14px 26px rgba(46, 125, 50, 0.3);
         }
         .btn-outline {
             background: white;
             color: #2e7d32;
             border: 1px solid #2e7d32;
+            box-shadow: 0 8px 16px rgba(46, 125, 50, 0.1);
         }
         .btn-outline:hover {
             transform: translateY(-2px);
@@ -114,6 +132,10 @@
         @media (max-width: 768px) {
             .form-card {
                 padding: 24px;
+            }
+            .form-row {
+                grid-template-columns: 1fr;
+                gap: 20px;
             }
             .form-actions {
                 flex-direction: column;
@@ -143,39 +165,31 @@
             </a>
         </div>
 
-        <div class="form-card">
+        <div class="form-wrapper">
+            <div class="form-card">
             <form th:action="@{/admin/products/add}" th:object="${product}" method="post">
-                <div class="form-grid">
+                <div class="form-row">
                     <div class="form-group">
                         <label for="productName">Tên sản phẩm</label>
-                        <input id="productName" type="text" th:field="*{productName}" placeholder="Ví dụ: Táo Mỹ, Nho đỏ..."/>
+                        <input id="productName" type="text" th:field="*{productName}" placeholder="Ví dụ: Táo Mỹ, Nho đỏ..." />
+                        <span class="helper-text">Tên hiển thị với người dùng trên trang chủ.</span>
                         <div class="error" th:if="${#fields.hasErrors('productName')}" th:errors="*{productName}"></div>
                     </div>
-
                     <div class="form-group">
                         <label for="price">Giá bán (VNĐ)</label>
-                        <input id="price" type="number" step="0.01" th:field="*{price}" placeholder="Nhập giá bán"/>
+                        <input id="price" type="number" step="0.01" min="0" th:field="*{price}" placeholder="Nhập giá bán" />
+                        <span class="helper-text">Giá bán theo đơn vị VNĐ. Ví dụ: 35000.</span>
                         <div class="error" th:if="${#fields.hasErrors('price')}" th:errors="*{price}"></div>
                     </div>
+                </div>
 
+                <div class="form-row">
                     <div class="form-group">
                         <label for="stock">Tồn kho</label>
-                        <input id="stock" type="number" th:field="*{stock}" placeholder="Số lượng hiện có"/>
+                        <input id="stock" type="number" min="0" th:field="*{stock}" placeholder="Số lượng hiện có" />
+                        <span class="helper-text">Số lượng hiện có trong kho.</span>
                         <div class="error" th:if="${#fields.hasErrors('stock')}" th:errors="*{stock}"></div>
                     </div>
-
-                    <div class="form-group">
-                        <label for="imageUrl">Đường dẫn ảnh</label>
-                        <input id="imageUrl" type="text" th:field="*{imageUrl}" placeholder="https://example.com/image.jpg"/>
-                        <div class="error" th:if="${#fields.hasErrors('imageUrl')}" th:errors="*{imageUrl}"></div>
-                    </div>
-
-                    <div class="form-group" style="grid-column: span 2; min-height: 100%;">
-                        <label for="description">Mô tả sản phẩm</label>
-                        <textarea id="description" th:field="*{description}" placeholder="Mô tả ngắn gọn về chất lượng, nguồn gốc..."></textarea>
-                        <div class="error" th:if="${#fields.hasErrors('description')}" th:errors="*{description}"></div>
-                    </div>
-
                     <div class="form-group">
                         <label for="category">Danh mục</label>
                         <select id="category" th:field="*{category.categoryId}" required>
@@ -185,7 +199,22 @@
                                     th:text="${category.categoryName}">
                             </option>
                         </select>
+                        <span class="helper-text">Chọn nhóm sản phẩm phù hợp.</span>
                         <div class="error" th:if="${#fields.hasErrors('category.categoryId')}" th:errors="*{category.categoryId}"></div>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="imageUrl">Đường dẫn ảnh</label>
+                        <input id="imageUrl" type="text" th:field="*{imageUrl}" placeholder="https://example.com/image.jpg" />
+                        <span class="helper-text">Dán URL ảnh sản phẩm chuẩn kích thước 600x600.</span>
+                        <div class="error" th:if="${#fields.hasErrors('imageUrl')}" th:errors="*{imageUrl}"></div>
+                    </div>
+                    <div class="form-group">
+                        <label for="description">Mô tả sản phẩm</label>
+                        <textarea id="description" th:field="*{description}" placeholder="Mô tả ngắn gọn về chất lượng, nguồn gốc..."></textarea>
+                        <div class="error" th:if="${#fields.hasErrors('description')}" th:errors="*{description}"></div>
                     </div>
                 </div>
 
@@ -200,6 +229,8 @@
                     </button>
                 </div>
             </form>
+            </div>
+        </div>
         </div>
     </main>
 </div>
