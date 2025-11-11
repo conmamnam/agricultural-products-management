@@ -71,9 +71,9 @@
                 </tr>
                 </tbody>
             </table>
-
+            <div th:if="${totalPage == 0}" style="color: red; margin-top: 10px; margin-left: 5px">Không tìm thấy sản phẩm</div>
         </div>
-        <div class="d-flex justify-content-center mt-4 mb-4">
+        <div th:if="${totalPage > 0}" class="d-flex justify-content-center mt-4 mb-4">
             <nav>
                 <ul class="pagination">
                     <li class="page-item" th:classappend="${currentPage == 1} ? 'disabled'">
