@@ -273,11 +273,30 @@ public class AdminController {
         return "redirect:/admin/users";
     }
 
-    @GetMapping("/users/delete/{id}")
-    public String deleteUser(@PathVariable("id") int id) {
+    @GetMapping("/users/deactivate/{id}")
+    public String deactivateUser(@PathVariable("id") int id, HttpSession session) {
+        User adminInfo = checkingAdminRole(session);
+        if (adminInfo == null) {
+            return "redirect:/admin";
+        }
         User existing = userService.findById(id);
         if (existing != null) {
-            userService.getAllUser().remove(existing);
+            existing.setStatus(false);
+            userService.saveUser(existing);
+        }
+        return "redirect:/admin/users";
+    }
+
+    @GetMapping("/users/activate/{id}")
+    public String activeUser(@PathVariable("id") int id, HttpSession session) {
+        User adminInfo = checkingAdminRole(session);
+        if (adminInfo == null) {
+            return "redirect:/admin";
+        }
+        User existing = userService.findById(id);
+        if (existing != null) {
+            existing.setStatus(true);
+            userService.saveUser(existing);
         }
         return "redirect:/admin/users";
     }

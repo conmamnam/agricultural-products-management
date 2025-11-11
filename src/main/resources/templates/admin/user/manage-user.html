@@ -66,17 +66,23 @@
                     <td th:text="${user.fullName}"></td>
                     <td th:text="${user.address}"></td>
                     <td th:text="${user.status ? 'Đang hoạt động' : 'Ngưng hoạt động'}"
-                        th:style="${user.status} ? 'color: green;' : 'color: yellow;'">
+                        th:style="${user.status} ? 'color: green;' : 'color: #ffc107;'">
                     </td>
                     <td th:text="${user.phoneNumber}"></td>
                     <td th:text="${user.role.roleId == 2 ? 'Khách hàng' : 'Quản trị viên'}"></td>
                     <td>
-                        <a th:href="@{'/admin/users/edit/' +${user.userId}}">Sửa</a>
-                        <a th:if="${user.role.roleId != 1}" th:href="@{'/admin/users/delete/' + ${user.userId}}"
+                        <a th:if="${session.adminInfo.userId == user.userId}" th:href="@{'/admin/users/edit/' +${user.userId}}">Sửa</a>
+                        <a th:if="${user.role.roleId != 1 && user.status == true}" th:href="@{'/admin/users/deactivate/' + ${user.userId}}"
                            style="color: red"
-                           onclick="return confirm('Xác nhận xoá?')"
+                           onclick="return confirm('Xác nhận tạm dừng dịch vụ đối với tài khoản này?')"
                         >
-                            Xoá
+                            Vô hiệu hóa
+                        </a>
+                        <a th:if="${user.role.roleId != 1 && user.status == false}" th:href="@{'/admin/users/activate/' + ${user.userId}}"
+                           style="color: #ffc107"
+                           onclick="return confirm('Xác nhận kích hoạt tài khoản này?')"
+                        >
+                            Kích hoạt
                         </a>
                     </td>
                 </tr>
