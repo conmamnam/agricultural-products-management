@@ -1,6 +1,10 @@
 package hsf302.group5.agriculturalproductsmanagement.controller;
 
-import hsf302.group5.agriculturalproductsmanagement.entity.*;
+import hsf302.group5.agriculturalproductsmanagement.entity.CartItem;
+import hsf302.group5.agriculturalproductsmanagement.entity.Order;
+import hsf302.group5.agriculturalproductsmanagement.entity.OrderDetail;
+import hsf302.group5.agriculturalproductsmanagement.entity.Product;
+import hsf302.group5.agriculturalproductsmanagement.entity.User;
 import hsf302.group5.agriculturalproductsmanagement.service.OrderDetailService;
 import hsf302.group5.agriculturalproductsmanagement.service.OrderService;
 import hsf302.group5.agriculturalproductsmanagement.service.ProductService;
@@ -9,7 +13,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -225,57 +228,31 @@ public class CartController {
             orderDetailService.saveOrderDetail(orderDetail);
         }
 
-            // Lưu transaction vào session (lịch sử giao dịch)
-            TransactionHistory transaction = new TransactionHistory(
-                    savedOrder.getOrderId(),
-                    totalPrice,
-                    paymentMethod,
-                    savedOrder.getOrderStatus(),
-                    savedOrder.getPaymentStatus(),
-                    LocalDateTime.now()
-            );
-            addTransactionToHistory(session, transaction);
+        // Xóa giỏ hàng khỏi session
+        session.removeAttribute("cart");
 
-            // Xóa giỏ hàng khỏi session
-            session.removeAttribute("cart");
-
-            // Nếu chọn VNPay → Redirect đến trang thanh toán VNPay
-            if ("VNPay".equals(paymentMethod)) {
-                // Lưu orderId vào session để xử lý sau khi thanh toán
-                session.setAttribute("orderId", savedOrder.getOrderId());
-                return "redirect:/payment/create?orderId=" + savedOrder.getOrderId() + "&amount=" + (long)totalPrice;
-            }
-
-            // Nếu không phải VNPay → Redirect đến trang chi tiết đơn hàng
-            return "redirect:/order/detail/" + savedOrder.getOrderId();
-    }
-
-        /**
-         * Helper method: Lấy giỏ hàng từ session
-         * Nếu chưa có → Tạo mới
-         */
-        @SuppressWarnings("unchecked")
-        private List<CartItem> getCart(HttpSession session) {
-            List<CartItem> cart = (List<CartItem>) session.getAttribute("cart");
-            if (cart == null) {
-                cart = new ArrayList<>();
-                session.setAttribute("cart", cart);
-            }
-            return cart;
+        // Nếu chọn VNPay → Redirect đến trang thanh toán VNPay
+        if ("VNPay".equals(paymentMethod)) {
+            // Lưu orderId vào session để xử lý sau khi thanh toán
+            session.setAttribute("orderId", savedOrder.getOrderId());
+            return "redirect:/payment/create?orderId=" + savedOrder.getOrderId() + "&amount=" + (long) totalPrice;
         }
 
-        /**
-         * Helper method: Thêm transaction vào lịch sử (session)
-         */
-        @SuppressWarnings("unchecked")
-        private void addTransactionToHistory(HttpSession session, TransactionHistory transaction) {
-            List<TransactionHistory> history = (List<TransactionHistory>) session.getAttribute("transactionHistory");
-            if (history == null) {
-                history = new ArrayList<>();
-            }
-            // Thêm transaction mới vào đầu list (giao dịch mới nhất hiển thị đầu tiên)
-            history.add(0, transaction);
-            session.setAttribute("transactionHistory", history);
-        }
+        // Nếu không phải VNPay → Redirect đến trang chi tiết đơn hàng
+        return "redirect:/order/detail/" + savedOrder.getOrderId();
     }
 
+    /**
+     * Helper method: Lấy giỏ hàng từ session
+     * Nếu chưa có → Tạo mới
+     */
+    @SuppressWarnings("unchecked")
+    private List<CartItem> getCart(HttpSession session) {
+        List<CartItem> cart = (List<CartItem>) session.getAttribute("cart");
+        if (cart == null) {
+            cart = new ArrayList<>();
+            session.setAttribute("cart", cart);
+        }
+        return cart;
+    }
+}

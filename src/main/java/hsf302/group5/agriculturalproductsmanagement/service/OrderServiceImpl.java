@@ -35,11 +35,20 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     public List<Order> getOrdersByUserId(int userId) {
-        return List.of();
+        return orderRepository.findByUser_UserId(userId);
     }
 
     @Override
     public List<Order> getAll() {
         return orderRepository.findAll();
+    }
+
+    @Override
+    public Order updateOrderStatus(int orderId, String orderStatus, String paymentStatus) {
+        Order order = orderRepository.findById(orderId)
+                .orElseThrow(() -> new IllegalArgumentException("Không tìm thấy đơn hàng với ID: " + orderId));
+        order.setOrderStatus(orderStatus);
+        order.setPaymentStatus(paymentStatus);
+        return orderRepository.save(order);
     }
 }
