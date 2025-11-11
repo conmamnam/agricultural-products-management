@@ -19,11 +19,17 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     public Order createOrder(Order order) {
-        // Thiết lập các giá trị mặc định trước khi lưu
-        order.setCreatedAt(LocalDateTime.now());
-        // Giả định trạng thái ban đầu
-        order.setOrderStatus("Pending");
-        order.setPaymentStatus("Unpaid");
+        boolean isNewOrder = order.getOrderId() == 0;
+
+        if (isNewOrder) {
+            order.setCreatedAt(LocalDateTime.now());
+            if (order.getOrderStatus() == null || order.getOrderStatus().isBlank()) {
+                order.setOrderStatus("Pending");
+            }
+            if (order.getPaymentStatus() == null || order.getPaymentStatus().isBlank()) {
+                order.setPaymentStatus("Unpaid");
+            }
+        }
 
         return orderRepository.save(order);
     }
