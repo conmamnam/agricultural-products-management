@@ -14,4 +14,5 @@ public interface UserService {
     List<User> getAllUser();
     Page<User> getPaginatedUsers(int pageNo, int pageSize);
     Page<User> searchPaginatedUsersByFullName(String fullName, int pageNo, int pageSize);
+    void saveUser(User user);
 }

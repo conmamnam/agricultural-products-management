@@ -71,4 +71,9 @@ public class UserServiceImpl implements UserService {
         Pageable pageable = PageRequest.of(pageNo - 1, pageSize);
         return userRepository.findUsersByFullNameContainingIgnoreCase(fullName, pageable);
     }
+
+    @Override
+    public void saveUser(User user) {
+        userRepository.save(user);
+    }
 }

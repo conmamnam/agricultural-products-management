@@ -39,7 +39,8 @@ public class UserController {
     public String registerPost(
             @Valid User user,
             BindingResult bindingResult,
-            Model model
+            Model model,
+            HttpSession session
     ) {
         if (bindingResult.hasErrors()) {
             return "register";
@@ -60,6 +61,8 @@ public class UserController {
         user.setStatus(true);
         user.setRole(userRole);
         userService.addUser(user);
+
+        session.setAttribute("account", user);
 
         return "redirect:/";
     }
@@ -83,6 +86,10 @@ public class UserController {
             // Nếu là admin chuyển về trang dashboard
             if (user.getRole().getRoleName().equalsIgnoreCase("admin")) {
                 return "redirect:/admin/dashboard";
+            }
+            if (user.isStatus() == false) {
+                model.addAttribute("error", "Tài khoản này đã bị vô hiệu hóa");
+                return "login";
             }
 
             // Redirect về trang chủ
