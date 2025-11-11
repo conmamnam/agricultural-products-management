@@ -3,7 +3,6 @@ package hsf302.group5.agriculturalproductsmanagement.controller;
 import hsf302.group5.agriculturalproductsmanagement.entity.Order;
 import hsf302.group5.agriculturalproductsmanagement.entity.OrderDetail;
 import hsf302.group5.agriculturalproductsmanagement.entity.Product;
-import hsf302.group5.agriculturalproductsmanagement.entity.TransactionHistory;
 import hsf302.group5.agriculturalproductsmanagement.service.OrderService;
 import hsf302.group5.agriculturalproductsmanagement.service.PaymentService;
 import hsf302.group5.agriculturalproductsmanagement.service.OrderDetailService;
@@ -65,7 +64,7 @@ public class PaymentController {
 
     // 2. [GET] /payment/vnpayReturn
     @GetMapping("/payment/vnpayReturn")
-    public String handleVnPayReturn(@RequestParam Map<String, String> params, 
+    public String handleVnPayReturn(@RequestParam Map<String, String> params,
                                     HttpSession session,
                                     Model model) {
         Map<String, String> result = paymentService.handleVnPayCallback(params);
@@ -93,8 +92,7 @@ public class PaymentController {
                     }
                 }
                 
-                // Cập nhật transaction history trong session
-                updateTransactionInHistory(session, orderId, "Confirmed", "Paid");
+                session.removeAttribute("orderId");
             }
 
             model.addAttribute("message", "Thanh toán thành công!");
@@ -114,23 +112,4 @@ public class PaymentController {
         return "payment_form"; // View: payment_form.html (trang nhận thông tin)
     }
 
-    /**
-     * Helper method: Cập nhật transaction trong lịch sử (session)
-     */
-    @SuppressWarnings("unchecked")
-    private void updateTransactionInHistory(HttpSession session, int orderId, String orderStatus, String paymentStatus) {
-        List<TransactionHistory> history = (List<TransactionHistory>) session.getAttribute("transactionHistory");
-        
-        if (history != null) {
-            // Tìm transaction có orderId tương ứng và cập nhật
-            for (TransactionHistory transaction : history) {
-                if (transaction.getOrderId() == orderId) {
-                    transaction.setOrderStatus(orderStatus);
-                    transaction.setPaymentStatus(paymentStatus);
-                    break;
-                }
-            }
-            session.setAttribute("transactionHistory", history);
-        }
-    }
 }
