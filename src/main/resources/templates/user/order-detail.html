@@ -31,7 +31,10 @@
             border-radius: 10px;
             margin-bottom: 20px;
         }
-        .product-item {
+    .alert-custom {
+        border-radius: 12px;
+    }
+    .product-item {
             border-bottom: 1px solid #e9ecef;
             padding: 15px 0;
         }
@@ -43,6 +46,14 @@
 <body>
 
 <div class="detail-container">
+    <div th:if="${successMessage != null}" class="alert alert-success alert-custom d-flex align-items-center gap-2">
+        <i class="bi bi-check-circle-fill"></i>
+        <span th:text="${successMessage}">Thành công</span>
+    </div>
+    <div th:if="${errorMessage != null}" class="alert alert-danger alert-custom d-flex align-items-center gap-2">
+        <i class="bi bi-exclamation-triangle-fill"></i>
+        <span th:text="${errorMessage}">Có lỗi xảy ra</span>
+    </div>
     <!-- Header -->
     <div class="order-header">
         <h2 class="text-success">
@@ -66,9 +77,37 @@
         <div class="col-md-6">
             <div class="info-box">
                 <h5 class="text-success"><i class="bi bi-info-circle"></i> Trạng thái đơn hàng</h5>
-                <p class="mb-1"><strong>Trạng thái:</strong> <span class="badge bg-warning" th:text="${order.orderStatus}">Pending</span></p>
-                <p class="mb-1"><strong>Thanh toán:</strong> <span class="badge bg-danger" th:text="${order.paymentStatus}">Unpaid</span></p>
-                <p class="mb-0"><strong>Phương thức:</strong> <span th:text="${order.paymentMethod}">COD</span></p>
+                <p class="mb-1">
+                    <strong>Trạng thái:</strong>
+                    <span class="badge"
+                          th:classappend="${order.orderStatus == 'Cancelled' ? ' bg-danger' : ((order.orderStatus == 'Confirmed' or order.orderStatus == 'Completed') ? ' bg-success' : ' bg-warning')}"
+                          th:text="${order.orderStatus}">Pending</span>
+                </p>
+                <p class="mb-1">
+                    <strong>Thanh toán:</strong>
+                    <span class="badge"
+                          th:classappend="${order.paymentStatus == 'Paid' ? ' bg-success' : (order.paymentStatus == 'Cancelled' ? ' bg-secondary' : ' bg-danger')}"
+                          th:text="${order.paymentStatus}">Unpaid</span>
+                </p>
+                <p class="mb-3"><strong>Phương thức:</strong> <span th:text="${order.paymentMethod}">COD</span></p>
+                <div class="d-flex flex-column gap-2">
+                    <form th:if="${order.paymentStatus != 'Paid' and order.orderStatus != 'Cancelled'}"
+                          th:action="@{'/order/pay/' + ${order.orderId}}"
+                          method="post"
+                          class="d-grid">
+                        <button type="submit" class="btn btn-success">
+                            <i class="bi bi-credit-card"></i> Thanh toán VNPay
+                        </button>
+                    </form>
+                    <form th:if="${order.paymentStatus != 'Paid' and order.orderStatus != 'Cancelled'}"
+                          th:action="@{'/order/cancel/' + ${order.orderId}}"
+                          method="post"
+                          class="d-grid">
+                        <button type="submit" class="btn btn-outline-danger" onclick="return confirm('Bạn có chắc muốn hủy giao dịch này?');">
+                            <i class="bi bi-x-octagon"></i> Hủy giao dịch
+                        </button>
+                    </form>
+                </div>
             </div>
         </div>
     </div>
@@ -103,7 +142,7 @@
     </div>
 
     <!-- Buttons -->
-    <div class="mt-4 d-flex gap-2">
+    <div class="mt-4 d-flex flex-wrap gap-2">
         <a href="/order/my-orders" class="btn btn-secondary">
             <i class="bi bi-arrow-left"></i> Quay lại
         </a>
