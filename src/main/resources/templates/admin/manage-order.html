@@ -18,6 +18,11 @@
     <main>
         <div class="card">
             <h2>Danh sách đơn hàng</h2>
+            <form th:action="@{/admin/orders}" method="get" class="mb-3 d-flex">
+                <input type="text" name="email" class="form-control me-2" placeholder="Nhập email khách hàng" th:value="${email}">
+                <button type="submit" class="btn btn-primary"><i class="bi bi-search"></i> Tìm kiếm</button>
+            </form>
+
 
             <!-- Success message -->
             <div th:if="${success}" class="alert alert-success" th:text="${success}"></div>
@@ -61,7 +66,7 @@
                     <ul class="pagination pagination-rounded shadow-sm">
                         <!-- Prev -->
                         <li class="page-item" th:classappend="${currentPage == 1} ? 'disabled'">
-                            <a class="page-link" th:href="@{|?pageNo=${currentPage - 1}|}" aria-label="Previous">
+                            <a class="page-link" th:href="@{|/admin/orders?pageNo=${currentPage - 1}&email=${email}|}" aria-label="Previous">
                                 <span aria-hidden="true">&laquo;</span>
                             </a>
                         </li>
@@ -71,12 +76,12 @@
                             th:each="i : ${#numbers.sequence(currentPage > 2 ? currentPage - 2 : 1,
                                                  currentPage + 2 <= totalPage ? currentPage + 2 : totalPage)}"
                             th:classappend="${i == currentPage} ? 'active'">
-                            <a class="page-link" th:href="@{'?pageNo=' + ${i}}" th:text="${i}">1</a>
+                            <a class="page-link" th:href="@{|/admin/orders?pageNo=${i}&email=${email}|}" th:text="${i}"></a>
                         </li>
 
                         <!-- Next -->
                         <li class="page-item" th:classappend="${currentPage == totalPage} ? 'disabled'">
-                            <a class="page-link" th:href="@{|?pageNo=${currentPage + 1}|}" aria-label="Next">
+                            <a class="page-link" th:href="@{|/admin/orders?pageNo=${currentPage + 1}&email=${email}|}" aria-label="Next">
                                 <span aria-hidden="true">&raquo;</span>
                             </a>
                         </li>
@@ -129,8 +134,7 @@
                         <div class="mb-3">
                             <label for="modalOrderStatus" class="form-label">Trạng thái mới</label>
                             <select name="orderStatus" id="modalOrderStatus" class="form-select" required>
-                                <option th:each="status : ${T(hsf302.agricultural_products_project.model.OrderStatus).values()}"
-                                        th:value="${status}"
+                                <option th:each="status : ${T(hsf302.group5.agriculturalproductsmanagement.entity.OrderStatus).values()}"                                        th:value="${status}"
                                         th:text="${#strings.equals(status.name(), 'PENDING') ? 'Chờ xác nhận' :
                           #strings.equals(status.name(), 'CONFIRMED') ? 'Đã xác nhận' :
                           #strings.equals(status.name(), 'SHIPPED') ? 'Đang giao hàng' :
