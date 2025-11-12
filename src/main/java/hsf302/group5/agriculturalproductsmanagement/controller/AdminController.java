@@ -2,7 +2,6 @@ package hsf302.group5.agriculturalproductsmanagement.controller;
 
 import hsf302.group5.agriculturalproductsmanagement.entity.*;
 import hsf302.group5.agriculturalproductsmanagement.service.*;
-import jakarta.persistence.Entity;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
@@ -24,19 +23,25 @@ public class AdminController {
     private final OrderService orderService;
     private final CategoryService categoryService;
     private final OrderDetailService orderDetailService;
+    private final ProductComboItemService productComboItemService;
 
     public AdminController(ProductService productService,
                            UserService userService,
                            OrderService orderService,
                            CategoryService categoryService,
-                           OrderDetailService orderDetailService
-    ) {
+                           OrderDetailService orderDetailService,
+                           ProductComboItemService productComboItemService) {
         this.productService = productService;
         this.userService = userService;
         this.orderService = orderService;
         this.categoryService = categoryService;
         this.orderDetailService = orderDetailService;
+        this.productComboItemService = productComboItemService;
     }
+
+
+
+
 
     // ================= Login page =================
     @GetMapping("")
@@ -95,7 +100,7 @@ public class AdminController {
                 .collect(Collectors.toList());
         model.addAttribute("recentUsers", recentUsers);
 
-        //  Thêm dữ liệu cho biểu đồ đơn hàng theo trạng thái
+        // ✅ Thêm dữ liệu cho biểu đồ đơn hàng theo trạng thái
         model.addAttribute("pendingCount", orderService.countOrdersByStatus("PENDING"));
         model.addAttribute("confirmedCount", orderService.countOrdersByStatus("CONFIRMED"));
         model.addAttribute("shippedCount", orderService.countOrdersByStatus("SHIPPED"));
@@ -106,56 +111,29 @@ public class AdminController {
     }
 
 
+
+
+
     // ================= Orders =================
     @GetMapping("/orders")
     public String orders(
             HttpSession session,
-            Model model,
-            @RequestParam(value = "email", required = false) String email,
-            @RequestParam(value = "pageNo", defaultValue = "1") int pageNo
+            Model model
     ) {
         User adminInfo = checkingAdminRole(session);
         if (adminInfo == null) {
             return "redirect:/admin";
         }
+        model.addAttribute("adminInfo", adminInfo);
 
-        int pageSize = 10; // Số đơn hàng mỗi trang
-        Page<Order> page;
-
-        if (email != null && !email.trim().isEmpty()) {
-            // Tìm kiếm theo email + phân trang
-            page = orderService.searchPaginatedOrdersByEmail(email, pageNo, pageSize);
-            model.addAttribute("email", email); // giữ giá trị tìm kiếm
-        } else {
-            // Lấy tất cả đơn hàng + phân trang
-            page = orderService.getPaginatedOrders(pageNo, pageSize);
-        }
-
-        // Dữ liệu truyền sang view
-        model.addAttribute("orders", page.getContent());
-
-        model.addAttribute("currentPage", pageNo);
-        model.addAttribute("totalPage", page.getTotalPages());
+        model.addAttribute("orders", orderService.getAll());
         model.addAttribute("activeMenu", "orders");
         model.addAttribute("page", "orders");
-        model.addAttribute("adminInfo", adminInfo);
-        model.addAttribute("statuses", List.of("PENDING", "CONFIRMED", "SHIPPED", "DELIVERED", "CANCELLED"));
-
 
         return "admin/manage-order";
     }
 
-
-    @PostMapping("/orders/update")
-    public String updateOrderStatus(@RequestParam("id") int id,
-                                    @RequestParam("status") String status) {
-        orderService.getOrderById(id).ifPresent(order -> {
-            orderService.updateOrderStatus(order.getOrderId(), status, order.getPaymentStatus());
-        });
-        return "redirect:/admin/orders";
-    }
-
-    @GetMapping("/Orders/detail/{id}")
+    @GetMapping("/orders/detail/{id}")
     public String orderDetail(@PathVariable("id") int id,
                               HttpSession session,
                               Model model) {
@@ -206,16 +184,18 @@ public class AdminController {
     ) {
         orderService.updateOrderStatusById(orderId, status);
         redirectAttributes.addFlashAttribute("message", "Cập nhật trạng thái thành công!");
-        return "redirect:/admin/Orders/detail/" + orderId;
+        return "redirect:/admin/orders/detail/" + orderId;
     }
-
-
 
     @GetMapping("/orders/delete/{id}")
     public String deleteOrder(@PathVariable("id") int id) {
         orderService.getOrderById(id).ifPresent(order -> orderService.getAll().remove(order));
         return "redirect:/admin/orders";
     }
+
+
+
+
 
     // ================= Products =================
     @GetMapping("/products")
@@ -283,13 +263,7 @@ public class AdminController {
             return "redirect:/admin";
         }
 
-        if (bindingResult.hasErrors() || product.getCategory() == null || product.getCategory().getCategoryId() == 0) {
-            if (product.getCategory() == null) {
-                product.setCategory(new Category());
-            }
-            if (product.getCategory().getCategoryId() == 0) {
-                bindingResult.rejectValue("category.categoryId", "category.invalid", "Vui lòng chọn danh mục hợp lệ");
-            }
+        if (bindingResult.hasErrors()) {
             model.addAttribute("categories", categoryService.getAllCategories());
             return "admin/product/create";
         }
@@ -299,9 +273,128 @@ public class AdminController {
         return "redirect:/admin/products";
     }
 
+    @GetMapping("/products/combo")
+    public String addProductComboPage(HttpSession session, Model model) {
+        User adminInfo = checkingAdminRole(session);
+        if (adminInfo == null) {
+            return "redirect:/admin";
+        }
+
+        model.addAttribute("adminInfo", adminInfo);
+        List<Product> comboProducts = productService.getProductsByCategoryId(8); // id 8 là dành riêng cho combo
+        model.addAttribute("comboProducts", comboProducts);
+
+        return "admin/product/combo";
+    }
+
+    @GetMapping("/products/combo/add-item/{id}")
+    public String addProductComboItemPage(
+            HttpSession session,
+            Model model,
+            @PathVariable("id") int id
+    ) {
+        User adminInfo = checkingAdminRole(session);
+        if (adminInfo == null) {
+            return "redirect:/admin";
+        }
+
+        Product productParent = productService.getProductById(id).orElse(null);
+        if (productParent == null) {
+            return "redirect:/admin/products";
+        }
+
+        List<ProductComboItem> comboItems = productComboItemService.getItemsByComboId(id);
+        List<Product> productList = productService.getAllProducts();
+
+        model.addAttribute("adminInfo", adminInfo);
+        model.addAttribute("productParent", productParent);
+        model.addAttribute("comboItems", comboItems);
+        model.addAttribute("productList", productList);
+
+        return "admin/product/combo-item-add";
+    }
+
+    @PostMapping("/admin/products/combo/add-item")
+    public String addProductToCombo(
+            @RequestParam("comboId") int comboId,
+            @RequestParam("productId") int productId,
+            @RequestParam("quantity") int quantity,
+            Model model
+    ) {
+        Product item = productService.getProductById(productId).orElse(null);
+        Product productParent = productService.getProductById(comboId).orElse(null);
+        if (item == null || productParent == null) {
+            model.addAttribute("error", "Lỗi sản phẩm");
+            return "redirect:/admin/products/combo/add-item/" + comboId;
+        }
+
+        // Kiểm tra nếu sản phẩm đã tồn tại trong combo -> cập nhật số lượng
+        ProductComboItem existing = productComboItemService.getByComboAndComponent(productParent, item);
+        if (existing != null) {
+            existing.setQuantity(existing.getQuantity() + quantity);
+            productComboItemService.save(existing);
+        } else {
+            ProductComboItem pci = new ProductComboItem(productParent, item, quantity);
+            productComboItemService.save(pci);
+        }
+
+        return "redirect:/admin/products/combo/add-item/" + comboId;
+    }
+
+    @GetMapping("/admin/products/combo/remove-item/{id}")
+    public String removeProductFromCombo(@PathVariable("id") int id) {
+        ProductComboItem pci = productComboItemService.getById(id);
+        if (pci != null) {
+            int comboId = pci.getCombo().getProductId();
+            productComboItemService.delete(pci);
+            return "redirect:/admin/products/combo/add-item/" + comboId;
+        }
+        return "redirect:/admin/products/combo";
+    }
+
+
     @GetMapping("/products/delete/{id}")
     public String deleteProduct(@PathVariable("id") int id) {
         productService.deleteProduct(id);
+        return "redirect:/admin/products";
+    }
+
+    @GetMapping("/products/edit/{id}")
+    public String editProductPage(
+            @PathVariable("id") int id,
+            Model model,
+            HttpSession session
+    ) {
+        User adminInfo = checkingAdminRole(session);
+        if (adminInfo == null) {
+            return "redirect:/admin";
+        }
+        Product product = productService.getProductById(id).orElse(null);
+        if (product == null) {
+            return "redirect:/admin/products";
+        }
+        model.addAttribute("product", product);
+        model.addAttribute("adminInfo", adminInfo);
+        return "admin/product/edit";
+    }
+
+    @PostMapping("/products/edit")
+    public String editProductPage(
+            @Valid Product product,
+            BindingResult bindingResult,
+            Model model,
+            HttpSession session
+    ) {
+        User adminInfo = checkingAdminRole(session);
+        if (adminInfo == null) {
+            return "redirect:/admin";
+        }
+        if (bindingResult.hasErrors()) {
+            model.addAttribute("product", product);
+            model.addAttribute("adminInfo", adminInfo);
+            return "admin/product/edit";
+        }
+        productService.saveProduct(product);
         return "redirect:/admin/products";
     }
 

@@ -25,17 +25,6 @@
             <form th:action="@{/admin/products/add}" th:object="${product}" method="post">
                 <table class="form-table">
                     <tr>
-                        <td><label>Danh mục:</label></td>
-                        <td>
-                            <select class="input-product-add" th:field="*{category.categoryId}" required>
-                                <option th:each="category : ${categories}"
-                                        th:value="${category.categoryId}"
-                                        th:text="${category.categoryName}">
-                                </option>
-                            </select>
-                        </td>
-                    </tr>
-                    <tr>
                         <td><label>Tên sản phẩm:</label></td>
                         <td>
                             <input class="input-product-add" type="text" th:field="*{productName}" placeholder="Tên sản phẩm"/>
@@ -70,6 +59,17 @@
                             <div style="margin-top: 5px; font-size: 12px; color: red" class="error" th:if="${#fields.hasErrors('imageUrl')}" th:errors="*{imageUrl}"></div>
                         </td>
                     </tr>
+                    <tr>
+                        <td><label>Danh mục:</label></td>
+                        <td>
+                            <select class="input-product-add" th:field="*{category.categoryId}" required>
+                                <option th:each="category : ${categories}"
+                                        th:value="${category.categoryId}"
+                                        th:text="${category.categoryName}">
+                                </option>
+                            </select>
+                        </td>
+                    </tr>
                 </table>
 
                 <div class="form-actions">
@@ -78,6 +78,7 @@
                 </div>
             </form>
         </div>
+        <a th:href="@{/admin/products/combo}">Thêm sản phẩm combo</a>
     </main>
 </div>
 </body>
