@@ -134,14 +134,16 @@
                         <div class="mb-3">
                             <label for="modalOrderStatus" class="form-label">Trạng thái mới</label>
                             <select name="orderStatus" id="modalOrderStatus" class="form-select" required>
-                                <option th:each="status : ${T(hsf302.group5.agriculturalproductsmanagement.entity.OrderStatus).values()}"                                        th:value="${status}"
-                                        th:text="${#strings.equals(status.name(), 'PENDING') ? 'Chờ xác nhận' :
-                          #strings.equals(status.name(), 'CONFIRMED') ? 'Đã xác nhận' :
-                          #strings.equals(status.name(), 'SHIPPED') ? 'Đang giao hàng' :
-                          #strings.equals(status.name(), 'DELIVERED') ? 'Đã giao' :
-                          #strings.equals(status.name(), 'CANCELLED') ? 'Đã hủy' : status}">
+                                <option th:each="status : ${statuses}"
+                                        th:value="${status}"
+                                        th:text="${status == 'PENDING' ? 'Chờ xác nhận' :
+                                                  status == 'CONFIRMED' ? 'Đã xác nhận' :
+                                                  status == 'SHIPPED' ? 'Đang giao hàng' :
+                                                  status == 'DELIVERED' ? 'Đã giao' :
+                                                  status == 'CANCELLED' ? 'Đã hủy' : status}">
                                 </option>
                             </select>
+
                         </div>
                     </div>
                     <div class="modal-footer">
