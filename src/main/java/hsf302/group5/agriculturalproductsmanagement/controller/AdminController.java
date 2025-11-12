@@ -172,7 +172,7 @@ public class AdminController {
     ) {
         orderService.updateOrderStatusById(orderId, status);
         redirectAttributes.addFlashAttribute("message", "Cập nhật trạng thái thành công!");
-        return "redirect:/admin/orders/details/" + orderId;
+        return "redirect:/admin/Orders/detail/" + orderId;
     }
 
 
