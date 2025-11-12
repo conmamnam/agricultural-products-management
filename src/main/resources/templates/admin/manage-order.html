@@ -54,7 +54,7 @@
                     </td>
 
                     <td class="action-links">
-                        <a class="page-link" th:href="@{|/admin/orders?pageNo=${i}&email=${email}|}" th:text="${i}"></a>
+                        <a th:href="@{'/admin/orders/detail/' + ${order.orderId}}" class="view-details-link btn  btn-outline-primary"
                            th:data-order-id="${order.orderId}">Xem chi tiết</a>
 
                     </td>
