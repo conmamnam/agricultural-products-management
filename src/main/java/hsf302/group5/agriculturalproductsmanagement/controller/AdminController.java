@@ -153,9 +153,13 @@ public class AdminController {
         if (adminInfo == null) {
             return "redirect:/admin";
         }
+        Order order = orderService.getOrderById(orderId).orElse(null);
+        if (order == null) {
+            return "redirect:/admin/orders";
+        }
+        model.addAttribute("order", order);
 
         model.addAttribute("adminInfo", adminInfo);
-        model.addAttribute("order", orderService.getOrderById(orderId));
         model.addAttribute("statuses", List.of("PENDING", "CONFIRMED", "SHIPPED", "DELIVERED", "CANCELLED"));
         model.addAttribute("page", "orders");
         return "admin/update-order-status";
