@@ -18,11 +18,6 @@
     <main>
         <div class="card">
             <h2>Danh sách đơn hàng</h2>
-            <form th:action="@{/admin/orders}" method="get" class="mb-3 d-flex">
-                <input type="text" name="email" class="form-control me-2" placeholder="Nhập email khách hàng" th:value="${email}">
-                <button type="submit" class="btn btn-primary"><i class="bi bi-search"></i> Tìm kiếm</button>
-            </form>
-
 
             <!-- Success message -->
             <div th:if="${success}" class="alert alert-success" th:text="${success}"></div>
@@ -31,7 +26,7 @@
                 <thead>
                 <tr>
                     <th>Mã đơn hàng</th>
-                    <th>Khách hàng</th>
+                    <th>Tên khách hàng</th>
                     <th>Ngày đặt</th>
                     <th>Tổng tiền</th>
                     <th>Trạng thái</th>
@@ -41,7 +36,7 @@
                 <tbody>
                 <tr th:each="order : ${orders}">
                     <td th:text="'#ORD' + ${order.orderId}"></td>
-                    <td th:text="${order.user.email}">Tên KH</td>
+                    <td th:text="${order.user.fullName}">Tên KH</td>
                     <td th:text="${order.createdAt}"></td>
                     <td th:text="${#numbers.formatDecimal(order.totalPrice, 0, 'COMMA', 0, 'POINT')} + 'đ'"></td>
 
@@ -50,108 +45,17 @@
                         <span th:case="'CONFIRMED'" class="text-orange fw-semibold">Đã xác nhận</span>
                         <span th:case="'SHIPPED'" class="text-primary fw-semibold">Đang giao hàng</span>
                         <span th:case="'DELIVERED'" class="text-success fw-semibold">Đã giao</span>
-                        <span th:case="'CANCELLED'" class="text-danger fw-semibold">Đã hủy</span>
+                        <span th:case="'CANCELLED'" style="color: red" class="text-danger fw-semibold">Đã hủy</span>
                     </td>
 
                     <td class="action-links">
-                        <a th:href="@{'/admin/Orders/detail/' + ${order.orderId}}" class="view-details-link btn  btn-outline-primary"
+                        <a th:href="@{'/admin/orders/detail/' + ${order.orderId}}" class="view-details-link btn  btn-outline-primary"
                            th:data-order-id="${order.orderId}">Xem chi tiết</a>
 
                     </td>
                 </tr>
                 </tbody>
             </table>
-            <div class="d-flex justify-content-center mt-4 mb-4">
-                <nav>
-                    <ul class="pagination pagination-rounded shadow-sm">
-                        <!-- Prev -->
-                        <li class="page-item" th:classappend="${currentPage == 1} ? 'disabled'">
-                            <a class="page-link" th:href="@{|/admin/orders?pageNo=${currentPage - 1}&email=${email}|}" aria-label="Previous">
-                                <span aria-hidden="true">&laquo;</span>
-                            </a>
-                        </li>
-
-                        <!-- Pages -->
-                        <li class="page-item"
-                            th:each="i : ${#numbers.sequence(currentPage > 2 ? currentPage - 2 : 1,
-                                                 currentPage + 2 <= totalPage ? currentPage + 2 : totalPage)}"
-                            th:classappend="${i == currentPage} ? 'active'">
-                            <a class="page-link" th:href="@{|/admin/orders?pageNo=${i}&email=${email}|}" th:text="${i}"></a>
-                        </li>
-
-                        <!-- Next -->
-                        <li class="page-item" th:classappend="${currentPage == totalPage} ? 'disabled'">
-                            <a class="page-link" th:href="@{|/admin/orders?pageNo=${currentPage + 1}&email=${email}|}" aria-label="Next">
-                                <span aria-hidden="true">&raquo;</span>
-                            </a>
-                        </li>
-                    </ul>
-                </nav>
-            </div>
-        </div>
-
-        <!-- Modal Xem Chi Tiết Đơn Hàng -->
-        <div class="modal fade" id="orderDetailsModal" tabindex="-1" aria-labelledby="orderDetailsModalLabel"
-             aria-hidden="true">
-            <div class="modal-dialog modal-lg">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="orderDetailsModalLabel">Chi tiết đơn hàng</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Đóng"></button>
-                    </div>
-                    <div class="modal-body">
-                        <table class="table table-bordered">
-                            <thead>
-                            <tr>
-                                <th>Tên sản phẩm</th>
-                                <th>Số lượng</th>
-                                <th>Giá</th>
-                            </tr>
-                            </thead>
-                            <tbody id="orderDetailsTableBody">
-                            <!-- Data sẽ được load bằng JS -->
-                            </tbody>
-                        </table>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Modal cập nhật status -->
-        <div class="modal fade" id="updateStatusModal" tabindex="-1" aria-labelledby="updateStatusModalLabel"
-             aria-hidden="true">
-            <div class="modal-dialog">
-                <form th:action="@{/admin/orders/update-status}" method="post" class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="updateStatusModalLabel">Cập nhật trạng thái đơn hàng</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Đóng"></button>
-                    </div>
-                    <div class="modal-body">
-                        <input type="hidden" name="orderId" id="modalOrderId"/>
-                        <div class="mb-3">
-                            <label for="modalOrderStatus" class="form-label">Trạng thái mới</label>
-                            <select name="orderStatus" id="modalOrderStatus" class="form-select" required>
-                                <option th:each="status : ${statuses}"
-                                        th:value="${status}"
-                                        th:text="${status == 'PENDING' ? 'Chờ xác nhận' :
-                                                  status == 'CONFIRMED' ? 'Đã xác nhận' :
-                                                  status == 'SHIPPED' ? 'Đang giao hàng' :
-                                                  status == 'DELIVERED' ? 'Đã giao' :
-                                                  status == 'CANCELLED' ? 'Đã hủy' : status}">
-                                </option>
-                            </select>
-
-                        </div>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="submit" class="btn btn-primary">Cập nhật</button>
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
-                    </div>
-                </form>
-            </div>
         </div>
     </main>
 </div>

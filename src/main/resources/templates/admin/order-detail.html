@@ -26,8 +26,13 @@
             <div class="card-body">
                 <div class="mb-4">
                     <h5>Thông tin khách hàng</h5>
+                    <p><strong>Họ tên:</strong> <span th:text="${orderDetails[0].order.user.fullName}"></span></p>
                     <p><strong>Email:</strong> <span th:text="${orderDetails[0].order.user.email}"></span></p>
                     <p><strong>Ngày đặt:</strong> <span th:text="${orderDetails[0].order.createdAt}"></span></p>
+                    <p><strong>Thanh toán:</strong>
+                        <span th:if="${orderDetails[0].order.paymentStatus}" class="badge bg-success p-2">Đã thanh toán</span>
+                        <span th:unless="${orderDetails[0].order.paymentStatus}" class="badge bg-warning text-dark p-2">Chưa thanh toán</span>
+                    </p>
                     <p><strong>Trạng thái:</strong>
                         <span th:switch="${orderDetails[0].order.orderStatus.toUpperCase()}">
                             <span th:case="'PENDING'" class="badge bg-warning text-dark">Chờ xác nhận</span>
