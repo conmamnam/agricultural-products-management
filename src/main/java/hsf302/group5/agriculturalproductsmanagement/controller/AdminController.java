@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Controller
 @RequestMapping("/admin")
@@ -72,26 +73,38 @@ public class AdminController {
 
     // ================= Dashboard =================
     @GetMapping("/dashboard")
-    public String dashboard(
-            HttpSession session,
-            Model model
-    ) {
+    public String dashboard(HttpSession session, Model model) {
+        // Kiểm tra quyền admin
         User adminInfo = checkingAdminRole(session);
         if (adminInfo == null) {
             return "redirect:/admin";
         }
         model.addAttribute("adminInfo", adminInfo);
 
+        // Thống kê tổng quan
         model.addAttribute("totalUsers", userService.getAllUser().size());
         model.addAttribute("totalProducts", productService.getAllProducts().size());
         model.addAttribute("totalOrders", orderService.getAll().size());
         model.addAttribute("activeMenu", "dashboard");
 
-        List<User> recentUsers = userService.getAllUser();
+        // Lấy 5 user mới nhất
+        List<User> recentUsers = userService.getAllUser()
+                .stream()
+                .sorted((a, b) -> b.getUserId() - a.getUserId())
+                .limit(5)
+                .collect(Collectors.toList());
         model.addAttribute("recentUsers", recentUsers);
 
-        return "admin/admin-dashboard"; // tên file fragment con, không phải layout
+        // ✅ Thêm dữ liệu cho biểu đồ đơn hàng theo trạng thái
+        model.addAttribute("pendingCount", orderService.countOrdersByStatus("PENDING"));
+        model.addAttribute("confirmedCount", orderService.countOrdersByStatus("CONFIRMED"));
+        model.addAttribute("shippedCount", orderService.countOrdersByStatus("SHIPPED"));
+        model.addAttribute("deliveredCount", orderService.countOrdersByStatus("DELIVERED"));
+        model.addAttribute("cancelledCount", orderService.countOrdersByStatus("CANCELLED"));
+
+        return "admin/admin-dashboard";
     }
+
 
     // ================= Orders =================
     @GetMapping("/orders")

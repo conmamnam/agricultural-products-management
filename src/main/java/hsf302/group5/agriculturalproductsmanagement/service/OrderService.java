@@ -13,4 +13,6 @@ public interface OrderService {
     List<Order> getAll();
     Order updateOrderStatus(int orderId, String orderStatus, String paymentStatus);
     void updateOrderStatusById(int orderId, String newStatus);
+    int countOrdersByStatus(String status);
+
 }
