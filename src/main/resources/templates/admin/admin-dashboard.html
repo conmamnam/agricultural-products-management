@@ -143,7 +143,7 @@
                     <td th:text="${user.fullName}"></td>
                     <td th:text="${user.address}"></td>
                     <td th:text="${user.status ? 'Đang hoạt động' : 'Ngưng hoạt động'}"
-                        th:style="${user.status} ? 'color: green;' : 'color: yellow;'">
+                        th:style="${user.status} ? 'color: green;' : 'color: #ffc107;'">
                     </td>
                     <td th:text="${user.phoneNumber}"></td>
                     <td th:text="${user.role.roleId == 2 ? 'Khách hàng' : 'Quản trị viên'}"></td>

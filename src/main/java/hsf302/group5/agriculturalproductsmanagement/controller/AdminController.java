@@ -15,6 +15,7 @@ import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Controller
@@ -192,13 +193,7 @@ public class AdminController {
             return "redirect:/admin";
         }
 
-        if (bindingResult.hasErrors() || product.getCategory() == null || product.getCategory().getCategoryId() == 0) {
-            if (product.getCategory() == null) {
-                product.setCategory(new Category());
-            }
-            if (product.getCategory().getCategoryId() == 0) {
-                bindingResult.rejectValue("category.categoryId", "category.invalid", "Vui lòng chọn danh mục hợp lệ");
-            }
+        if (bindingResult.hasErrors()) {
             model.addAttribute("categories", categoryService.getAllCategories());
             return "admin/product/create";
         }
@@ -208,9 +203,65 @@ public class AdminController {
         return "redirect:/admin/products";
     }
 
+    @GetMapping("/products/combo/add")
+    public String addProductComboPage(HttpSession session, Model model) {
+        User adminInfo = checkingAdminRole(session);
+        if (adminInfo == null) {
+            return "redirect:/admin";
+        }
+
+        model.addAttribute("adminInfo", adminInfo);
+        Product product = new Product();
+        product.setCategory(categoryService.getCategoryById(8)); // id 8 là dành riêng cho combo
+        model.addAttribute("product", product);
+        model.addAttribute("productItems", productService.getAllProducts());
+        model.addAttribute("setComboItems", new ArrayList<Product>());
+
+        return "admin/product/create-combo";
+    }
+
     @GetMapping("/products/delete/{id}")
     public String deleteProduct(@PathVariable("id") int id) {
         productService.deleteProduct(id);
+        return "redirect:/admin/products";
+    }
+
+    @GetMapping("/products/edit/{id}")
+    public String editProductPage(
+            @PathVariable("id") int id,
+            Model model,
+            HttpSession session
+    ) {
+        User adminInfo = checkingAdminRole(session);
+        if (adminInfo == null) {
+            return "redirect:/admin";
+        }
+        Product product = productService.getProductById(id).orElse(null);
+        if (product == null) {
+            return "redirect:/admin/products";
+        }
+        model.addAttribute("product", product);
+        model.addAttribute("adminInfo", adminInfo);
+        return "admin/product/edit";
+    }
+
+    @PostMapping("/products/edit")
+    public String editProductPage(
+            @Valid Product product,
+            BindingResult bindingResult,
+            Model model,
+            HttpSession session
+    ) {
+        User adminInfo = checkingAdminRole(session);
+        if (adminInfo == null) {
+            return "redirect:/admin";
+        }
+        if (bindingResult.hasErrors()) {
+            model.addAttribute("product", product);
+            model.addAttribute("adminInfo", adminInfo);
+            return "admin/product/edit";
+        }
+        productService.saveProduct(product);
         return "redirect:/admin/products";
     }
 

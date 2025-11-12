@@ -2,7 +2,7 @@
 <html lang="en" xmlns:th="https://www.thymeleaf.org">
 <head th:replace="~{admin/layout :: common-styles}">
     <meta charset="UTF-8">
-    <title>Thêm sản phẩm</title>
+    <title>Thêm sản phẩm combo</title>
     <link rel="icon" type="image/png" href="/image/logo-web.png">
     <link href="./css/product.css" rel="stylesheet">
     <style>
@@ -21,7 +21,7 @@
 
     <main>
         <div class="card">
-            <h2>Thêm sản phẩm mới</h2>
+            <h2>Thêm sản phẩm combo mới</h2>
             <form th:action="@{/admin/products/add}" th:object="${product}" method="post">
                 <table class="form-table">
                     <tr>
@@ -59,15 +59,11 @@
                             <div style="margin-top: 5px; font-size: 12px; color: red" class="error" th:if="${#fields.hasErrors('imageUrl')}" th:errors="*{imageUrl}"></div>
                         </td>
                     </tr>
+                    <input type="hidden" th:field="*{category}"/>
                     <tr>
-                        <td><label>Danh mục:</label></td>
+                        <td><label>Combo đi kèm</label></td>
                         <td>
-                            <select class="input-product-add" th:field="*{category.categoryId}" required>
-                                <option th:each="category : ${categories}"
-                                        th:value="${category.categoryId}"
-                                        th:text="${category.categoryName}">
-                                </option>
-                            </select>
+
                         </td>
                     </tr>
                 </table>
@@ -78,7 +74,6 @@
                 </div>
             </form>
         </div>
-        <a th:href="@{/admin/products/combo/add}">Thêm sản phẩm combo</a>
     </main>
 </div>
 </body>

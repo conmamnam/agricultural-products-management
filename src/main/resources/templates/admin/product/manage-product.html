@@ -57,7 +57,7 @@
                     <td th:text="${product.productName}">Tên</td>
                     <td th:text="${product.category.categoryName}">Danh mục</td>
                     <td th:text="${product.price}">0.0</td>
-                    <td th:text="${product.stock}">0</td>
+                    <td th:text="${product.stock}" th:style="${product.stock == 0} ? 'color: red;' : ''">0</td>
                     <td th:text="${product.description}">Mô tả</td>
                     <td><img th:src="${product.imageUrl}" alt="Ảnh" width="50"/></td>
                     <td class="action-links">

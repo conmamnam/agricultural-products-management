@@ -36,11 +36,11 @@
                 <tbody>
                 <tr th:each="order : ${orders}">
                     <td th:text="'#ORD' + ${order.orderId}"></td>
-                    <td th:text="${order.user.userFullName}">Tên KH</td>
-                    <td th:text="${order.createAt}"></td>
+                    <td th:text="${order.user.email}">Tên KH</td>
+                    <td th:text="${order.createdAt}"></td>
                     <td th:text="${#numbers.formatDecimal(order.totalPrice, 0, 'COMMA', 0, 'POINT')} + 'đ'"></td>
 
-                    <td th:switch="${order.orderStatus.name()}">
+                    <td th:switch="${order.orderStatus.toUpperCase()}">
                         <span th:case="'PENDING'" class="text-warning fw-semibold">Chờ xác nhận</span>
                         <span th:case="'CONFIRMED'" class="text-orange fw-semibold">Đã xác nhận</span>
                         <span th:case="'SHIPPED'" class="text-primary fw-semibold">Đang giao hàng</span>
@@ -53,7 +53,7 @@
                            th:data-order-id="${order.orderId}">Xem chi tiết</a>
                         <a href="#" class="update-status-link btn  btn-outline-primary"
                            th:data-order-id="${order.orderId}"
-                           th:data-order-status="${order.orderStatus.name()}">
+                           th:data-order-status="${order.orderStatus.toUpperCase()}">
                             Cập nhật trạng thái
                         </a>
                     </td>
