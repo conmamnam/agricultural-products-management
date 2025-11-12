@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * TransactionController - Hiển thị lịch sử đơn hàng/giao dịch từ database
@@ -33,8 +34,11 @@ public class TransactionController {
         }
 
         List<Order> orders = orderService.getOrdersByUserId(account.getUserId());
+        List<Order> successfulOrders = orders.stream()
+                .filter(order -> "Paid".equalsIgnoreCase(order.getPaymentStatus()))
+                .collect(Collectors.toList());
         session.removeAttribute("transactionHistory");
-        model.addAttribute("orders", orders);
+        model.addAttribute("orders", successfulOrders);
         model.addAttribute("account", account);
         return "user/transaction-history";
     }
