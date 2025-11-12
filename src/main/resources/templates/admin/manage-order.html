@@ -51,11 +51,7 @@
                     <td class="action-links">
                         <a th:href="@{'/admin/Orders/detail/' + ${order.orderId}}" class="view-details-link btn  btn-outline-primary"
                            th:data-order-id="${order.orderId}">Xem chi tiết</a>
-                        <a href="#" class="update-status-link btn  btn-outline-primary"
-                           th:data-order-id="${order.orderId}"
-                           th:data-order-status="${order.orderStatus.toUpperCase()}">
-                            Cập nhật trạng thái
-                        </a>
+
                     </td>
                 </tr>
                 </tbody>
