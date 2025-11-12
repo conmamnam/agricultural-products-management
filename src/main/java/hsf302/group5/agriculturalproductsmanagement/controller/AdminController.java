@@ -1,12 +1,8 @@
 package hsf302.group5.agriculturalproductsmanagement.controller;
 
-import hsf302.group5.agriculturalproductsmanagement.entity.Category;
-import hsf302.group5.agriculturalproductsmanagement.entity.User;
-import hsf302.group5.agriculturalproductsmanagement.entity.Product;
-import hsf302.group5.agriculturalproductsmanagement.service.CategoryService;
-import hsf302.group5.agriculturalproductsmanagement.service.OrderService;
-import hsf302.group5.agriculturalproductsmanagement.service.ProductService;
-import hsf302.group5.agriculturalproductsmanagement.service.UserService;
+import hsf302.group5.agriculturalproductsmanagement.entity.*;
+import hsf302.group5.agriculturalproductsmanagement.service.*;
+import jakarta.persistence.Entity;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
@@ -14,6 +10,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -26,15 +23,19 @@ public class AdminController {
     private final UserService userService;
     private final OrderService orderService;
     private final CategoryService categoryService;
+    private final OrderDetailService orderDetailService;
 
     public AdminController(ProductService productService,
                            UserService userService,
                            OrderService orderService,
-                           CategoryService categoryService) {
+                           CategoryService categoryService,
+                           OrderDetailService orderDetailService
+    ) {
         this.productService = productService;
         this.userService = userService;
         this.orderService = orderService;
         this.categoryService = categoryService;
+        this.orderDetailService = orderDetailService;
     }
 
     // ================= Login page =================
@@ -120,6 +121,58 @@ public class AdminController {
         });
         return "redirect:/admin/orders";
     }
+
+    @GetMapping("/Orders/detail/{id}")
+    public String orderDetail(@PathVariable("id") int id,
+                              HttpSession session,
+                              Model model) {
+        User adminInfo = checkingAdminRole(session);
+        if (adminInfo == null) {
+            return "redirect:/admin";
+        }
+
+        List<OrderDetail> orderDetails = orderDetailService.getOrderDetailsByOrderId(id);
+        if (orderDetails == null || orderDetails.isEmpty()) {
+            model.addAttribute("error", "Không tìm thấy đơn hàng");
+            return "redirect:/admin/orders";
+        }
+
+        model.addAttribute("adminInfo", adminInfo);
+        model.addAttribute("orderDetails", orderDetails);
+        model.addAttribute("activeMenu", "orders");
+        return "admin/order-detail"; //
+    }
+    // Xử lý khi admin bấm “Cập nhật”
+    @GetMapping("/orders/update-status")
+    public String updateOrderStatusForm(
+            @RequestParam("id") int orderId,
+            HttpSession session,
+            Model model
+    ) {
+        User adminInfo = checkingAdminRole(session);
+        if (adminInfo == null) {
+            return "redirect:/admin";
+        }
+
+        model.addAttribute("adminInfo", adminInfo);
+        model.addAttribute("order", orderService.getOrderById(orderId));
+        model.addAttribute("statuses", List.of("PENDING", "CONFIRMED", "SHIPPED", "DELIVERED", "CANCELLED"));
+        model.addAttribute("page", "orders");
+        return "admin/update-order-status";
+    }
+
+    @PostMapping("/orders/update-status")
+    public String updateOrderStatus(
+            @RequestParam("orderId") int orderId,
+            @RequestParam("status") String status,
+            RedirectAttributes redirectAttributes
+    ) {
+        orderService.updateOrderStatusById(orderId, status);
+        redirectAttributes.addFlashAttribute("message", "Cập nhật trạng thái thành công!");
+        return "redirect:/admin/orders/details/" + orderId;
+    }
+
+
 
     @GetMapping("/orders/delete/{id}")
     public String deleteOrder(@PathVariable("id") int id) {

@@ -9,6 +9,7 @@ import jakarta.servlet.http.HttpSession;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.List;
 
@@ -66,5 +67,58 @@ public class OrderController {
         model.addAttribute("account", account);
         return "user/order-detail";
     }
-}
 
+    // 3. [POST] /order/pay/{id} - Thanh toán lại qua VNPay
+    @PostMapping("/pay/{id}")
+    public String payOrder(@PathVariable("id") int id,
+                           HttpSession session,
+                           RedirectAttributes redirectAttributes) {
+        User account = (User) session.getAttribute("account");
+        if (account == null) {
+            return "redirect:/login";
+        }
+
+        Order order = orderService.getOrderById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Không tìm thấy đơn hàng"));
+
+        if (order.getUser().getUserId() != account.getUserId()) {
+            return "redirect:/order/my-orders";
+        }
+
+        if ("Paid".equalsIgnoreCase(order.getPaymentStatus())) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Đơn hàng này đã được thanh toán.");
+            return "redirect:/order/detail/" + id;
+        }
+
+        session.setAttribute("orderId", order.getOrderId());
+        long amount = Math.round(order.getTotalPrice());
+        return "redirect:/payment/create?orderId=" + order.getOrderId() + "&amount=" + amount;
+    }
+
+    // 4. [POST] /order/cancel/{id} - Hủy giao dịch
+    @PostMapping("/cancel/{id}")
+    public String cancelOrder(@PathVariable("id") int id,
+                              HttpSession session,
+                              RedirectAttributes redirectAttributes) {
+        User account = (User) session.getAttribute("account");
+        if (account == null) {
+            return "redirect:/login";
+        }
+
+        Order order = orderService.getOrderById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Không tìm thấy đơn hàng"));
+
+        if (order.getUser().getUserId() != account.getUserId()) {
+            return "redirect:/order/my-orders";
+        }
+
+        if ("Paid".equalsIgnoreCase(order.getPaymentStatus())) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Đơn hàng đã thanh toán không thể hủy.");
+            return "redirect:/order/detail/" + id;
+        }
+
+        orderService.updateOrderStatus(order.getOrderId(), "Cancelled", "Cancelled");
+        redirectAttributes.addFlashAttribute("successMessage", "Đã hủy giao dịch của đơn hàng #" + order.getOrderId());
+        return "redirect:/order/detail/" + id;
+    }
+}

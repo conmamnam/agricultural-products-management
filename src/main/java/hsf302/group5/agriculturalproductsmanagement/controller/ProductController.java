@@ -88,12 +88,20 @@ public class ProductController {
         return "redirect:/admin/product";
     }
 
-    // 7. [GET] /product/category/{type} (User)
-    @GetMapping("/product/category/{type}")
-    public String showProductsByCategory(@PathVariable("type") int categoryId, Model model) {
+    // 7. [GET] /product/category/{categoryId} (User)
+    @GetMapping("/product/category/{categoryId}")
+    public String showProductsByCategory(@PathVariable("categoryId") int categoryId, Model model) {
+        Category category = categoryService.getCategoryById(categoryId);
+        if (category == null) {
+            return "redirect:/product/all-product";
+        }
+
         List<Product> products = productService.getProductsByCategoryId(categoryId);
+        model.addAttribute("category", category);
         model.addAttribute("products", products);
-        return "product_category"; // View: product_category.html
+        model.addAttribute("totalProducts", products.size());
+        model.addAttribute("categories", categoryService.getAllCategories());
+        return "user/category-products";
     }
 
     // 8. [GET] /products/{id} (User)
