@@ -57,4 +57,14 @@ public class OrderServiceImpl implements OrderService {
         order.setPaymentStatus(paymentStatus);
         return orderRepository.save(order);
     }
+
+    @Override
+    public void updateOrderStatusById(int orderId, String newStatus) {
+        Order order = orderRepository.findById(orderId).orElse(null);
+        if (order != null) {
+            order.setOrderStatus(newStatus);
+            orderRepository.save(order);
+        }
+    }
+
 }
