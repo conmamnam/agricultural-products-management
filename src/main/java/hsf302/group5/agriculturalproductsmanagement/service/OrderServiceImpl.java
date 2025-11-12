@@ -67,4 +67,12 @@ public class OrderServiceImpl implements OrderService {
         }
     }
 
+    @Override
+    public int countOrdersByStatus(String status) {
+        return (int) orderRepository.findAll()
+                .stream()
+                .filter(o -> o.getOrderStatus().equalsIgnoreCase(status))
+                .count();
+    }
+
 }

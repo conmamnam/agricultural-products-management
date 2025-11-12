@@ -156,6 +156,11 @@
 
 <!-- 🧠 Script biểu đồ trạng thái -->
 <script th:inline="javascript">
+    var pendingCount = [[${pendingCount}]];
+    var confirmedCount = [[${confirmedCount}]];
+    var shippedCount = [[${shippedCount}]];
+    var deliveredCount = [[${deliveredCount}]];
+    var cancelledCount = [[${cancelledCount}]];
     const ctx = document.getElementById('orderStatusChart').getContext('2d');
     const orderStatusChart = new Chart(ctx, {
         type: 'bar',
@@ -163,13 +168,7 @@
             labels: ['Chờ xử lý', 'Đã xác nhận', 'Đã giao', 'Đã nhận', 'Đã hủy'],
             datasets: [{
                 label: 'Số lượng đơn hàng',
-                data: [
-                    [[${pendingCount}]],
-                    [[${confirmedCount}]],
-                    [[${shippedCount}]],
-                    [[${deliveredCount}]],
-                    [[${cancelledCount}]]
-                ],
+                data: [pendingCount, confirmedCount, shippedCount, deliveredCount, cancelledCount],
                 backgroundColor: [
                     '#f57c00',
                     '#1976d2',
