@@ -2,11 +2,15 @@ package hsf302.group5.agriculturalproductsmanagement.service;
 
 import hsf302.group5.agriculturalproductsmanagement.entity.Order;
 import hsf302.group5.agriculturalproductsmanagement.repository.OrderRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class OrderServiceImpl implements OrderService {
@@ -74,5 +78,26 @@ public class OrderServiceImpl implements OrderService {
                 .filter(o -> o.getOrderStatus().equalsIgnoreCase(status))
                 .count();
     }
+
+    @Override
+    public List<Order> findByUserEmailContainingIgnoreCase(String email) {
+        return orderRepository.findAll()
+                .stream()
+                .filter(order -> order.getUser().getEmail().toLowerCase().contains(email.toLowerCase()))
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public Page<Order> getPaginatedOrders(int pageNo, int pageSize) {
+        Pageable pageable = PageRequest.of(pageNo - 1, pageSize);
+        return orderRepository.findAll(pageable);
+    }
+
+    @Override
+    public Page<Order> searchPaginatedOrdersByEmail(String email, int pageNo, int pageSize) {
+        Pageable pageable = PageRequest.of(pageNo - 1, pageSize);
+        return orderRepository.findByUserEmailContainingIgnoreCase(email, pageable);
+    }
+
 
 }

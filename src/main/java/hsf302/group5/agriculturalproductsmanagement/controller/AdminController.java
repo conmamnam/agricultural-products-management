@@ -96,7 +96,7 @@ public class AdminController {
                 .collect(Collectors.toList());
         model.addAttribute("recentUsers", recentUsers);
 
-        // ✅ Thêm dữ liệu cho biểu đồ đơn hàng theo trạng thái
+        //  Thêm dữ liệu cho biểu đồ đơn hàng theo trạng thái
         model.addAttribute("pendingCount", orderService.countOrdersByStatus("PENDING"));
         model.addAttribute("confirmedCount", orderService.countOrdersByStatus("CONFIRMED"));
         model.addAttribute("shippedCount", orderService.countOrdersByStatus("SHIPPED"));
@@ -111,20 +111,41 @@ public class AdminController {
     @GetMapping("/orders")
     public String orders(
             HttpSession session,
-            Model model
+            Model model,
+            @RequestParam(value = "email", required = false) String email,
+            @RequestParam(value = "pageNo", defaultValue = "1") int pageNo
     ) {
         User adminInfo = checkingAdminRole(session);
         if (adminInfo == null) {
             return "redirect:/admin";
         }
-        model.addAttribute("adminInfo", adminInfo);
 
-        model.addAttribute("orders", orderService.getAll());
+        int pageSize = 10; // Số đơn hàng mỗi trang
+        Page<Order> page;
+
+        if (email != null && !email.trim().isEmpty()) {
+            // Tìm kiếm theo email + phân trang
+            page = orderService.searchPaginatedOrdersByEmail(email, pageNo, pageSize);
+            model.addAttribute("email", email); // giữ giá trị tìm kiếm
+        } else {
+            // Lấy tất cả đơn hàng + phân trang
+            page = orderService.getPaginatedOrders(pageNo, pageSize);
+        }
+
+        // Dữ liệu truyền sang view
+        model.addAttribute("orders", page.getContent());
+
+        model.addAttribute("currentPage", pageNo);
+        model.addAttribute("totalPage", page.getTotalPages());
         model.addAttribute("activeMenu", "orders");
         model.addAttribute("page", "orders");
+        model.addAttribute("adminInfo", adminInfo);
+        model.addAttribute("statuses", List.of("PENDING", "CONFIRMED", "SHIPPED", "DELIVERED", "CANCELLED"));
+
 
         return "admin/manage-order";
     }
+
 
     @PostMapping("/orders/update")
     public String updateOrderStatus(@RequestParam("id") int id,
