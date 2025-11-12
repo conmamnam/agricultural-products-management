@@ -133,11 +133,14 @@ public class AdminController {
 
         // Dữ liệu truyền sang view
         model.addAttribute("orders", page.getContent());
+
         model.addAttribute("currentPage", pageNo);
         model.addAttribute("totalPage", page.getTotalPages());
         model.addAttribute("activeMenu", "orders");
         model.addAttribute("page", "orders");
         model.addAttribute("adminInfo", adminInfo);
+        model.addAttribute("statuses", List.of("PENDING", "CONFIRMED", "SHIPPED", "DELIVERED", "CANCELLED"));
+
 
         return "admin/manage-order";
     }
