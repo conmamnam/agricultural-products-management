@@ -117,7 +117,7 @@ public class OrderController {
             return "redirect:/order/detail/" + id;
         }
 
-        orderService.updateOrderStatus(order.getOrderId(), "Cancelled", "Cancelled");
+        orderService.updateOrderStatus(order.getOrderId(), "CANCELLED", "Cancelled");
         redirectAttributes.addFlashAttribute("successMessage", "Đã hủy giao dịch của đơn hàng #" + order.getOrderId());
         return "redirect:/order/detail/" + id;
     }

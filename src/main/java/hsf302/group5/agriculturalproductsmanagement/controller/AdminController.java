@@ -209,6 +209,30 @@ public class AdminController {
             RedirectAttributes redirectAttributes
     ) {
         orderService.updateOrderStatusById(orderId, status);
+        // Trả lại số lượng tồn kho của từng sản phẩm sau khi hủy đơn hàng
+        if (status.compareToIgnoreCase("CANCELLED") == 0) {
+            List<OrderDetail> orderDetails = orderDetailService.getOrderDetailsByOrderId(orderId);
+            int productComboItemStock = 0;
+            int remainingStock = 0;
+            for (OrderDetail orderDetail : orderDetails) {
+                Product product = orderDetail.getProduct();
+                if (product != null) {
+                    if (product.getCategory().getCategoryId() == 8) { // Cate 8 dành riêng cho combo
+                        List<ProductComboItem> productComboItems = productComboItemService.getItemsByComboId(product.getProductId());
+                        for (ProductComboItem item : productComboItems) {
+                            productComboItemStock = item.getComponent().getStock();
+                            remainingStock = productComboItemStock + (orderDetail.getQuantity()*item.getQuantity());
+                            item.getComponent().setStock(remainingStock);
+                        }
+                    }
+                    int currentStock = product.getStock();
+                    int quantityPurchased = orderDetail.getQuantity();
+                    int updatedStock = Math.max(0, currentStock + quantityPurchased);
+                    product.setStock(updatedStock);
+                    productService.saveProduct(product);
+                }
+            }
+        }
         redirectAttributes.addFlashAttribute("message", "Cập nhật trạng thái thành công!");
         return "redirect:/admin/orders/detail/" + orderId;
     }

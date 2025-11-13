@@ -74,7 +74,7 @@ public class PaymentController {
             // Cập nhật Order trong database
             Optional<Order> orderOpt = orderService.getOrderById(orderId);
             if (orderOpt.isPresent()) {
-                orderService.updateOrderStatus(orderId, "Confirmed", "Paid");
+                orderService.updateOrderStatus(orderId, "PENDING", "Paid");
 
                 // Giảm số lượng tồn kho của từng sản phẩm sau khi thanh toán thành công
                 List<OrderDetail> orderDetails = orderDetailService.getOrderDetailsByOrderId(orderId);
@@ -98,9 +98,9 @@ public class PaymentController {
                         productService.saveProduct(product);
                     }
                 }
-                
+
                 // Cập nhật transaction history trong session
-                updateTransactionInHistory(session, orderId, "Confirmed", "Paid");
+                updateTransactionInHistory(session, orderId, "CONFIRMED", "Paid");
             }
 
             model.addAttribute("message", "Thanh toán thành công!");
