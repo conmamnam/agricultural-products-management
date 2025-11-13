@@ -5,12 +5,14 @@ import hsf302.group5.agriculturalproductsmanagement.service.*;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -76,6 +78,10 @@ public class AdminController {
         return null;
     }
 
+
+
+
+
     // ================= Dashboard =================
     @GetMapping("/dashboard")
     public String dashboard(HttpSession session, Model model) {
@@ -120,6 +126,11 @@ public class AdminController {
             HttpSession session,
             Model model,
             @RequestParam(value = "email", required = false) String email,
+            @RequestParam(value = "status", required = false) String status,
+            @RequestParam(value = "startDate", required = false)
+            @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
+            @RequestParam(value = "endDate", required = false)
+            @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate,
             @RequestParam(value = "pageNo", defaultValue = "1") int pageNo
     ) {
         User adminInfo = checkingAdminRole(session);
@@ -127,24 +138,22 @@ public class AdminController {
             return "redirect:/admin";
         }
 
-        int pageSize = 10; // số đơn hàng mỗi trang
-        Page<Order> page;
+        if (startDate != null && endDate == null) endDate = startDate;
+        if (endDate != null && startDate == null) startDate = endDate;
 
-        if (email != null && !email.trim().isEmpty()) {
-            // Tìm kiếm theo email + phân trang
-            page = orderService.searchPaginatedOrdersByEmail(email, pageNo, pageSize);
-            model.addAttribute("email", email); // giữ giá trị tìm kiếm
-        } else {
-            // Lấy tất cả đơn hàng + phân trang
-            page = orderService.getPaginatedOrders(pageNo, pageSize);
-        }
+        int pageSize = 10;
+        Page<Order> page = orderService.filterOrdersPaginated(email, status, startDate, endDate, pageNo, pageSize);
 
         model.addAttribute("orders", page.getContent());
         model.addAttribute("currentPage", pageNo);
         model.addAttribute("totalPage", page.getTotalPages());
-        model.addAttribute("activeMenu", "orders");
-        model.addAttribute("page", "orders");
+        model.addAttribute("email", email);
+        model.addAttribute("status", status);
+        model.addAttribute("startDate", startDate);
+        model.addAttribute("endDate", endDate);
+        model.addAttribute("statuses", List.of("PENDING", "CONFIRMED", "SHIPPED", "DELIVERED", "CANCELLED"));
         model.addAttribute("adminInfo", adminInfo);
+        model.addAttribute("activeMenu", "orders");
 
         return "admin/manage-order";
     }
@@ -321,7 +330,7 @@ public class AdminController {
         }
 
         List<ProductComboItem> comboItems = productComboItemService.getItemsByComboId(id);
-        List<Product> productList = productService.getAllProducts();
+        List<Product> productList = productService.getAllProductsByCategoryIdNot(8); // 8 là combo không item đơn lẻ
 
         model.addAttribute("adminInfo", adminInfo);
         model.addAttribute("productParent", productParent);
@@ -331,7 +340,7 @@ public class AdminController {
         return "admin/product/combo-item-add";
     }
 
-    @PostMapping("/admin/products/combo/add-item")
+    @PostMapping("/products/combo/add-item")
     public String addProductToCombo(
             @RequestParam("comboId") int comboId,
             @RequestParam("productId") int productId,
@@ -358,7 +367,7 @@ public class AdminController {
         return "redirect:/admin/products/combo/add-item/" + comboId;
     }
 
-    @GetMapping("/admin/products/combo/remove-item/{id}")
+    @GetMapping("/products/combo/remove-item/{id}")
     public String removeProductFromCombo(@PathVariable("id") int id) {
         ProductComboItem pci = productComboItemService.getById(id);
         if (pci != null) {
@@ -414,6 +423,10 @@ public class AdminController {
         productService.saveProduct(product);
         return "redirect:/admin/products";
     }
+
+
+
+
 
     // ================= Users =================
     @GetMapping("/users")

@@ -63,6 +63,10 @@
                             <div style="margin-top: 5px; font-size: 12px; color: red" class="error" th:if="${#fields.hasErrors('imageUrl')}" th:errors="*{imageUrl}"></div>
                         </td>
                     </tr>
+                    <tr th:if="${product.category.categoryId == 8}">
+                        <td><label>Danh mục:</label></td>
+                        <td th:text="${product.category.categoryName}"></td>
+                    </tr>
                 </table>
 
                 <div class="form-actions">
@@ -71,6 +75,9 @@
                 </div>
             </form>
         </div>
+        <a th:href="@{'/admin/products/combo/add-item/' + ${product.productId}}">
+            Chỉnh sửa sản phẩm thành phần
+        </a>
     </main>
 </div>
 </body>

@@ -3,6 +3,7 @@ package hsf302.group5.agriculturalproductsmanagement.service;
 import hsf302.group5.agriculturalproductsmanagement.entity.Order;
 import org.springframework.data.domain.Page;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -20,6 +21,6 @@ public interface OrderService {
     Page<Order> getPaginatedOrders(int pageNo, int pageSize);
     // Tìm kiếm theo email + phân trang
     Page<Order> searchPaginatedOrdersByEmail(String email, int pageNo, int pageSize);
-
+    public Page<Order> filterOrdersPaginated(String email, String status, LocalDate startDate, LocalDate endDate, int pageNo, int pageSize);
 
 }

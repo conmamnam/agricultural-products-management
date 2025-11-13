@@ -3,10 +3,12 @@ package hsf302.group5.agriculturalproductsmanagement.service;
 import hsf302.group5.agriculturalproductsmanagement.entity.Order;
 import hsf302.group5.agriculturalproductsmanagement.repository.OrderRepository;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -99,5 +101,40 @@ public class OrderServiceImpl implements OrderService {
         return orderRepository.findByUserEmailContainingIgnoreCase(email, pageable);
     }
 
+    @Override
+    public Page<Order> filterOrdersPaginated(String email, String status, LocalDate startDate, LocalDate endDate, int pageNo, int pageSize) {
+        List<Order> orders = orderRepository.findAll();
+
+        // Lọc theo email
+        if (email != null && !email.isBlank()) {
+            orders = orders.stream()
+                    .filter(o -> o.getUser().getEmail().toLowerCase().contains(email.toLowerCase()))
+                    .toList();
+        }
+
+        // Lọc theo trạng thái
+        if (status != null && !status.isBlank()) {
+            orders = orders.stream()
+                    .filter(o -> o.getOrderStatus().equalsIgnoreCase(status))
+                    .toList();
+        }
+
+        // Lọc theo khoảng ngày
+        if (startDate != null && endDate != null) {
+            orders = orders.stream()
+                    .filter(o -> {
+                        LocalDate created = o.getCreatedAt().toLocalDate();
+                        return !created.isBefore(startDate) && !created.isAfter(endDate);
+                    })
+                    .toList();
+        }
+
+        // Phân trang thủ công
+        int start = (pageNo - 1) * pageSize;
+        int end = Math.min(start + pageSize, orders.size());
+        List<Order> pageContent = orders.subList(Math.max(0, start), end);
+
+        return new PageImpl<>(pageContent, PageRequest.of(pageNo - 1, pageSize), orders.size());
+    }
 
 }
