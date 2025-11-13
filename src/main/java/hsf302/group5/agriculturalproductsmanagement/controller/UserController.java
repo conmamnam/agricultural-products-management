@@ -80,17 +80,18 @@ public class UserController {
         User user = userService.getUserByEmailAndPassword(email, password);
 
         if (user != null) {
-            // Lưu user entity trực tiếp vào session
-            session.setAttribute("account", user);
 
             // Nếu là admin chuyển về trang dashboard
             if (user.getRole().getRoleName().equalsIgnoreCase("admin")) {
+                session.setAttribute("adminInfo", user);
                 return "redirect:/admin/dashboard";
             }
             if (user.isStatus() == false) {
                 model.addAttribute("error", "Tài khoản này đã bị vô hiệu hóa");
                 return "login";
             }
+            // Lưu user entity trực tiếp vào session
+            session.setAttribute("account", user);
 
             // Redirect về trang chủ
             return "redirect:/home";

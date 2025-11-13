@@ -31,6 +31,7 @@
             <div class="card-header bg-primary text-white">
                 <h4 class="mb-0">
                     <i class="fa fa-boxes me-2"></i>
+                    ID: <span th:text="${productParent.productId}"></span> |
                     Combo: <span th:text="${productParent.productName}"></span> |
                     Giá: <span th:text="${#numbers.formatDecimal(productParent.price, 0, 'COMMA', 0, 'POINT')} + 'đ'"></span>
                 </h4>
@@ -48,17 +49,25 @@
                 <table class="table table-bordered table-sm align-middle">
                     <thead class="table-light">
                     <tr>
-                        <th>#</th>
+                        <th>ID</th>
                         <th>Tên sản phẩm</th>
+                        <th>Giá</th>
                         <th>Số lượng</th>
+                        <th>Mô tả</th>
+                        <th>Ảnh</th>
                         <th>Thao tác</th>
                     </tr>
                     </thead>
                     <tbody>
-                    <tr th:each="item, iter : ${comboItems}">
-                        <td th:text="${iter.index + 1}"></td>
-                        <td th:text="${item.product.productName}"></td>
+                    <tr th:each="item : ${comboItems}">
+                        <td th:text="${item.component.productId}"></td>
+                        <td th:text="${item.component.productName}"></td>
+                        <td th:text="${item.component.price}"></td>
                         <td th:text="${item.quantity}"></td>
+                        <td th:text="${item.component.description}"></td>
+                        <td>
+                            <img th:src="${item.component.imageUrl}" alt="Ảnh" style="width:60px;height:60px;object-fit:cover;">
+                        </td>
                         <td>
                             <a th:href="@{'/admin/products/combo/remove-item/' + ${item.id}}"
                                class="btn btn-sm btn-danger">
@@ -83,10 +92,9 @@
                 <table class="table table-bordered table-striped table-hover align-middle">
                     <thead class="table-light">
                     <tr>
-                        <th>#</th>
+                        <th>ID</th>
                         <th>Tên sản phẩm</th>
                         <th>Giá</th>
-                        <th>Tồn kho</th>
                         <th>Mô tả</th>
                         <th>Ảnh</th>
                         <th style="width: 100px;">Số lượng</th>
@@ -94,11 +102,10 @@
                     </tr>
                     </thead>
                     <tbody>
-                    <tr th:each="p, iter : ${productList}">
-                        <td th:text="${iter.index + 1}"></td>
+                    <tr th:each="p : ${productList}">
+                        <td th:text="${p.productId}"></td>
                         <td th:text="${p.productName}"></td>
                         <td th:text="${#numbers.formatDecimal(p.price, 0, 'COMMA', 0, 'POINT')} + 'đ'"></td>
-                        <td th:text="${p.stock}"></td>
                         <td th:text="${p.description}"></td>
                         <td>
                             <img th:src="${p.imageUrl}" alt="Ảnh" style="width:60px;height:60px;object-fit:cover;">
@@ -106,15 +113,23 @@
                         <td>
                             <input type="number" name="quantity"
                                    th:attr="form='form__' + ${p.productId}"
-                                   value="1" min="1" max="999"
-                                   class="form-control form-control-sm input-quantity">
+                                   value="1"
+                                   min="1"
+                                   th:max="${p.stock}"
+                                   th:disabled="${p.stock == 0}"
+                                   class="form-control form-control-sm input-quantity"
+                                   th:classappend="${p.stock == 0} ? ' bg-light text-muted' : ''">
                         </td>
                         <td>
                             <form th:id="'form__' + ${p.productId}" th:action="@{/admin/products/combo/add-item}" method="post">
                                 <input type="hidden" name="comboId" th:value="${productParent.productId}" />
                                 <input type="hidden" name="productId" th:value="${p.productId}" />
-                                <button type="submit" class="btn btn-sm btn-success">
-                                    <i class="fa fa-plus"></i> Thêm
+                                <button type="submit"
+                                        class="btn btn-sm btn-success"
+                                        th:disabled="${p.stock == 0}"
+                                        th:classappend="${p.stock == 0} ? ' btn-secondary disabled' : ''"
+                                >
+                                    Thêm
                                 </button>
                             </form>
                         </td>

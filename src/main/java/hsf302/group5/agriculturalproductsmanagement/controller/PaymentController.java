@@ -21,15 +21,17 @@ public class PaymentController {
     private final OrderService orderService;
     private final OrderDetailService orderDetailService;
     private final ProductService productService;
+    private final ProductComboItemService productComboItemService;
 
     public PaymentController(PaymentService paymentService,
                              OrderService orderService,
                              OrderDetailService orderDetailService,
-                             ProductService productService) {
+                             ProductService productService, ProductComboItemService productComboItemService) {
         this.paymentService = paymentService;
         this.orderService = orderService;
         this.orderDetailService = orderDetailService;
         this.productService = productService;
+        this.productComboItemService = productComboItemService;
     }
 
     // 1. [POST] /payment/create
@@ -76,9 +78,19 @@ public class PaymentController {
 
                 // Giảm số lượng tồn kho của từng sản phẩm sau khi thanh toán thành công
                 List<OrderDetail> orderDetails = orderDetailService.getOrderDetailsByOrderId(orderId);
+                int productComboItemStock = 0;
+                int remainingStock = 0;
                 for (OrderDetail orderDetail : orderDetails) {
                     Product product = orderDetail.getProduct();
                     if (product != null) {
+                        if (product.getCategory().getCategoryId() == 8) { // Cate 8 dành riêng cho combo
+                            List<ProductComboItem> productComboItems = productComboItemService.getItemsByComboId(product.getProductId());
+                            for (ProductComboItem item : productComboItems) {
+                                productComboItemStock = item.getComponent().getStock();
+                                remainingStock = productComboItemStock - (orderDetail.getQuantity()*item.getQuantity());
+                                item.getComponent().setStock(remainingStock);
+                            }
+                        }
                         int currentStock = product.getStock();
                         int quantityPurchased = orderDetail.getQuantity();
                         int updatedStock = Math.max(0, currentStock - quantityPurchased);

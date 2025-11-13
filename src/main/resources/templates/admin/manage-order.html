@@ -18,9 +18,41 @@
     <main>
         <div class="card">
             <h2>Danh sách đơn hàng</h2>
-            <form th:action="@{/admin/orders}" method="get" class="mb-3 d-flex">
-                <input type="text" name="email" class="form-control me-2" placeholder="Nhập email khách hàng" th:value="${email}">
-                <button type="submit" class="btn btn-primary"><i class="bi bi-search"></i> Tìm kiếm</button>
+            <form th:action="@{/admin/orders}" method="get" class="row g-3 align-items-end mb-4">
+                <div class="col-md-3">
+                    <label class="form-label">Email khách hàng</label>
+                    <input type="text" name="email" class="form-control" placeholder="Nhập email..."
+                           th:value="${email}">
+                </div>
+
+                <div class="col-md-2">
+                    <label class="form-label">Từ ngày</label>
+                    <input type="date" name="startDate" class="form-control" th:value="${startDate}">
+                </div>
+
+                <div class="col-md-2">
+                    <label class="form-label">Đến ngày</label>
+                    <input type="date" name="endDate" class="form-control" th:value="${endDate}">
+                </div>
+
+                <div class="col-md-2">
+                    <label class="form-label">Trạng thái</label>
+                    <select name="status" class="form-select">
+                        <option value="">-- Tất cả --</option>
+                        <option th:each="s : ${statuses}" th:value="${s}" th:text="${s}"
+                                th:selected="${s == status}"></option>
+                    </select>
+                </div>
+
+                <div class="col-md-2 d-grid">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="bi bi-search"></i> Lọc
+                    </button>
+                </div>
+
+                <div class="col-md-1 d-grid">
+                    <a th:href="@{/admin/orders}" class="btn btn-secondary">Xóa</a>
+                </div>
             </form>
 
 
@@ -62,11 +94,49 @@
                 </tbody>
             </table>
         </div>
+
+        <div th:if="${totalPage > 0}" class="d-flex justify-content-center mt-4 mb-4">
+            <nav>
+                <ul class="pagination">
+                    <li class="page-item" th:classappend="${currentPage == 1} ? 'disabled'">
+                        <a class="page-link"
+                           th:href="@{/admin/orders(
+                       pageNo=${currentPage - 1},
+                       email=${email},
+                       status=${status},
+                       startDate=${startDate},
+                       endDate=${endDate}
+                   )}">&laquo;</a>
+                    </li>
+
+                    <li class="page-item" th:each="i : ${#numbers.sequence(1, totalPage)}"
+                        th:classappend="${currentPage == i} ? 'active'">
+                        <a class="page-link"
+                           th:href="@{/admin/orders(
+                       pageNo=${i},
+                       email=${email},
+                       status=${status},
+                       startDate=${startDate},
+                       endDate=${endDate}
+                   )}"
+                           th:text="${i}"></a>
+                    </li>
+
+                    <li class="page-item" th:classappend="${currentPage == totalPage} ? 'disabled'">
+                        <a class="page-link"
+                           th:href="@{/admin/orders(
+                       pageNo=${currentPage + 1},
+                       email=${email},
+                       status=${status},
+                       startDate=${startDate},
+                       endDate=${endDate}
+                   )}">&raquo;</a>
+                    </li>
+                </ul>
+            </nav>
+        </div>
     </main>
 </div>
-
-
-
 
 </body>
 </html>
